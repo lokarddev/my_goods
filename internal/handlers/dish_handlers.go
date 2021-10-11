@@ -6,6 +6,5 @@ import (
 )
 
 func (h *Handler) Test(c *gin.Context) {
-
 	c.JSON(http.StatusOK, map[string]string{"Hello": "world"})
 }

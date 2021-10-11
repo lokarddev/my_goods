@@ -5,6 +5,7 @@ import (
 	"github.com/sirupsen/logrus"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+	"my_goods/internal/models"
 )
 
 type DbConfig struct {
@@ -13,6 +14,7 @@ type DbConfig struct {
 	Username string
 	Password string
 	DbName   string
+	SslMode  string
 }
 
 func NewDatabaseConf() *DbConfig {
@@ -22,12 +24,19 @@ func NewDatabaseConf() *DbConfig {
 		DbName:   DbName,
 		Username: DbUser,
 		Password: DbPass,
+		SslMode:  SslMode,
 	}
 }
 
 func InitDB(cfg *DbConfig) *gorm.DB {
-	dsn := fmt.Sprintf("%s:%s@%s:%s/%s?charset=utf8mb4", cfg.Username, cfg.Password, cfg.Host, cfg.Port, cfg.DbName)
+	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=%s", cfg.Host, cfg.Username, cfg.Password, cfg.DbName, cfg.Port, cfg.SslMode)
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	if err != nil {
+		logrus.Error(err)
+	}
+	err = db.AutoMigrate(&models.Goods{})
+	err = db.AutoMigrate(&models.Dish{})
+	err = db.AutoMigrate(&models.List{})
 	if err != nil {
 		logrus.Error(err)
 	}

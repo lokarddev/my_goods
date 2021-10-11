@@ -19,7 +19,7 @@ func (h *Handler) InitRoutes() *gin.Engine {
 	{
 		dish := api.Group("/dish")
 		{
-			dish.GET("/")
+			dish.GET("/", h.Test)
 		}
 	}
 	return router

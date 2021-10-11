@@ -12,6 +12,7 @@ import (
 func main() {
 	configs.InitEnv()
 	db := configs.InitDB(configs.NewDatabaseConf())
+
 	repo := repos.NewRepository(db)
 	service := services.NewService(repo)
 	handler := handlers.NewHandler(service)

@@ -10,11 +10,12 @@ var (
 	Host string
 	Port string
 
-	DbHost string
-	DbPort string
-	DbUser string
-	DbPass string
-	DbName string
+	DbHost  string
+	DbPort  string
+	DbUser  string
+	DbPass  string
+	DbName  string
+	SslMode string
 )
 
 func InitEnv() {
@@ -34,4 +35,5 @@ func InitEnv() {
 	DbUser = os.Getenv("DB_USER")
 	DbPass = os.Getenv("DB_PASS")
 	DbName = os.Getenv("DB_NAME")
+	SslMode = os.Getenv("SSL_MODE")
 }
