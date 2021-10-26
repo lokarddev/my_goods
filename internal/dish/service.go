@@ -1,15 +1,11 @@
 package dish
 
-// DishServiceInterface dish service behaviour
-type DishServiceInterface interface {
-}
-
-// DishService init structure for dish service
-type DishService struct {
-	repo DishRepoInterface
+// Service init structure for dish service
+type Service struct {
+	repo Repository
 }
 
 // NewDishService init func for dish service
-func NewDishService(repo DishRepoInterface) *DishService {
-	return &DishService{repo: repo}
+func NewDishService(repo Repository) *Service {
+	return &Service{repo: repo}
 }

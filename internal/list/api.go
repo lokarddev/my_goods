@@ -5,44 +5,44 @@ import (
 	"net/http"
 )
 
-type ListHandler struct {
-	services *ListService
+type Handler struct {
+	services *Service
 }
 
-func NewListHandler(services *ListService) *ListHandler {
-	return &ListHandler{services: services}
+func NewListHandler(services *Service) *Handler {
+	return &Handler{services: services}
 }
 
-func (h *ListHandler) RegisterRoutes(router *gin.Engine) {
+func (h *Handler) RegisterRoutes(router *gin.Engine) {
 	api := router.Group("/api")
 	{
 		list := api.Group("/list")
 		{
-			list.GET("/:id", h.GetList)
-			list.GET("/", h.GetAllLists)
-			list.POST("/", h.CreateList)
-			list.PUT("/:id", h.UpdateList)
-			list.DELETE("/:id", h.DeleteList)
+			list.GET("/:id", h.getList)
+			list.GET("/", h.getAllLists)
+			list.POST("/", h.createList)
+			list.PUT("/:id", h.updateList)
+			list.DELETE("/:id", h.deleteList)
 		}
 	}
 }
 
-func (h *ListHandler) GetList(c *gin.Context) {
+func (h *Handler) getList(c *gin.Context) {
 	c.JSON(http.StatusOK, map[string]string{"Hello": "world"})
 }
 
-func (h *ListHandler) GetAllLists(c *gin.Context) {
+func (h *Handler) getAllLists(c *gin.Context) {
 	c.JSON(http.StatusOK, map[string]string{"Hello": "world"})
 }
 
-func (h *ListHandler) CreateList(c *gin.Context) {
+func (h *Handler) createList(c *gin.Context) {
 	c.JSON(http.StatusOK, map[string]string{"Hello": "world"})
 }
 
-func (h *ListHandler) UpdateList(c *gin.Context) {
+func (h *Handler) updateList(c *gin.Context) {
 	c.JSON(http.StatusOK, map[string]string{"Hello": "world"})
 }
 
-func (h *ListHandler) DeleteList(c *gin.Context) {
+func (h *Handler) deleteList(c *gin.Context) {
 	c.JSON(http.StatusOK, map[string]string{"Hello": "world"})
 }

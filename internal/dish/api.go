@@ -5,44 +5,45 @@ import (
 	"net/http"
 )
 
-type DishHandler struct {
-	services *DishService
+type Handler struct {
+	services *Service
 }
 
-func NewDishHandler(services *DishService) *DishHandler {
-	return &DishHandler{services: services}
+func NewDishHandler(services *Service) *Handler {
+	return &Handler{services: services}
 }
 
-func (h *DishHandler) RegisterRoutes(router *gin.Engine) {
+func (h *Handler) RegisterRoutes(router *gin.Engine) {
 	api := router.Group("/api")
 	{
 		dish := api.Group("/dish")
 		{
-			dish.GET("/:id", h.GetDish)
-			dish.GET("/", h.GetAllDishes)
-			dish.POST("/", h.CreateDish)
-			dish.PUT("/:id", h.UpdateDish)
-			dish.DELETE("/:id", h.DeleteDish)
+			dish.GET("/:id", h.getDish)
+			dish.GET("/", h.getAllDishes)
+			dish.POST("/", h.createDish)
+			dish.PUT("/:id", h.updateDish)
+			dish.DELETE("/:id", h.deleteDish)
 		}
 	}
 }
 
-func (h *DishHandler) GetDish(c *gin.Context) {
+func (h *Handler) getDish(c *gin.Context) {
+
 	c.JSON(http.StatusOK, map[string]string{"Hello": "world"})
 }
 
-func (h *DishHandler) GetAllDishes(c *gin.Context) {
+func (h *Handler) getAllDishes(c *gin.Context) {
 	c.JSON(http.StatusOK, map[string]string{"Hello": "world"})
 }
 
-func (h *DishHandler) CreateDish(c *gin.Context) {
+func (h *Handler) createDish(c *gin.Context) {
 	c.JSON(http.StatusOK, map[string]string{"Hello": "world"})
 }
 
-func (h *DishHandler) UpdateDish(c *gin.Context) {
+func (h *Handler) updateDish(c *gin.Context) {
 	c.JSON(http.StatusOK, map[string]string{"Hello": "world"})
 }
 
-func (h *DishHandler) DeleteDish(c *gin.Context) {
+func (h *Handler) deleteDish(c *gin.Context) {
 	c.JSON(http.StatusOK, map[string]string{"Hello": "world"})
 }

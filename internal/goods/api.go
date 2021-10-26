@@ -5,44 +5,44 @@ import (
 	"net/http"
 )
 
-type GoodsHandler struct {
-	services *GoodsService
+type Handler struct {
+	services *Service
 }
 
-func NewGoodsHandler(services *GoodsService) *GoodsHandler {
-	return &GoodsHandler{services: services}
+func NewGoodsHandler(services *Service) *Handler {
+	return &Handler{services: services}
 }
 
-func (h *GoodsHandler) RegisterRoutes(router *gin.Engine) {
+func (h *Handler) RegisterRoutes(router *gin.Engine) {
 	api := router.Group("/api")
 	{
 		goods := api.Group("/goods")
 		{
-			goods.GET("/:id", h.GetGoods)
-			goods.GET("/", h.GetAllGoods)
-			goods.POST("/", h.CreateGoods)
-			goods.PUT("/:id", h.UpdateGoods)
-			goods.DELETE("/:id", h.DeleteGoods)
+			goods.GET("/:id", h.getGoods)
+			goods.GET("/", h.getAllGoods)
+			goods.POST("/", h.createGoods)
+			goods.PUT("/:id", h.updateGoods)
+			goods.DELETE("/:id", h.deleteGoods)
 		}
 	}
 }
 
-func (h *GoodsHandler) GetGoods(c *gin.Context) {
+func (h *Handler) getGoods(c *gin.Context) {
 	c.JSON(http.StatusOK, map[string]string{"Hello": "world"})
 }
 
-func (h *GoodsHandler) GetAllGoods(c *gin.Context) {
+func (h *Handler) getAllGoods(c *gin.Context) {
 	c.JSON(http.StatusOK, map[string]string{"Hello": "world"})
 }
 
-func (h *GoodsHandler) CreateGoods(c *gin.Context) {
+func (h *Handler) createGoods(c *gin.Context) {
 	c.JSON(http.StatusOK, map[string]string{"Hello": "world"})
 }
 
-func (h *GoodsHandler) UpdateGoods(c *gin.Context) {
+func (h *Handler) updateGoods(c *gin.Context) {
 	c.JSON(http.StatusOK, map[string]string{"Hello": "world"})
 }
 
-func (h *GoodsHandler) DeleteGoods(c *gin.Context) {
+func (h *Handler) deleteGoods(c *gin.Context) {
 	c.JSON(http.StatusOK, map[string]string{"Hello": "world"})
 }

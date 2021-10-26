@@ -9,7 +9,7 @@ import (
 
 func main() {
 	initial.Env()
-	db := initial.InitDB(initial.NewDatabaseConf())
+	db := initial.DB(initial.NewDatabaseConf())
 	handler := gin.New()
 	handler.Use(gin.Logger())
 	server := initial.Router(db, handler)

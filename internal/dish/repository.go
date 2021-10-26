@@ -2,16 +2,12 @@ package dish
 
 import "gorm.io/gorm"
 
-// DishRepo base db struct
-type DishRepo struct {
+// Repository base db struct
+type Repository struct {
 	db *gorm.DB
 }
 
-// DishRepoInterface goods behaviour interface
-type DishRepoInterface interface {
-}
-
 // NewDishRepo init func for dish repository
-func NewDishRepo(db *gorm.DB) *DishRepo {
-	return &DishRepo{db: db}
+func NewDishRepo(db *gorm.DB) *Repository {
+	return &Repository{db: db}
 }

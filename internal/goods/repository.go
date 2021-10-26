@@ -2,16 +2,12 @@ package goods
 
 import "gorm.io/gorm"
 
-// GoodsRepo base db struct
-type GoodsRepo struct {
+// Repository base db struct
+type Repository struct {
 	db *gorm.DB
 }
 
-// GoodsRepoInterface goods behaviour interface
-type GoodsRepoInterface interface {
-}
-
 // NewGoodsRepo init func for goods repository
-func NewGoodsRepo(db *gorm.DB) *GoodsRepo {
-	return &GoodsRepo{db: db}
+func NewGoodsRepo(db *gorm.DB) *Repository {
+	return &Repository{db: db}
 }
