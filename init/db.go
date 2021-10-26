@@ -1,11 +1,11 @@
-package configs
+package init
 
 import (
 	"fmt"
 	"github.com/sirupsen/logrus"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
-	"my_goods/internal/models"
+	"my_goods/internal/entity"
 )
 
 type DbConfig struct {
@@ -34,9 +34,9 @@ func InitDB(cfg *DbConfig) *gorm.DB {
 	if err != nil {
 		logrus.Error(err)
 	}
-	err = db.AutoMigrate(&models.Goods{})
-	err = db.AutoMigrate(&models.Dish{})
-	err = db.AutoMigrate(&models.List{})
+	err = db.AutoMigrate(&entity.Goods{})
+	err = db.AutoMigrate(&entity.Dish{})
+	err = db.AutoMigrate(&entity.List{})
 	if err != nil {
 		logrus.Error(err)
 	}

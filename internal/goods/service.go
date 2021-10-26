@@ -1,6 +1,4 @@
-package services
-
-import "my_goods/internal/repos"
+package goods
 
 // GoodsServiceInterface goods service behaviour
 type GoodsServiceInterface interface {
@@ -8,10 +6,10 @@ type GoodsServiceInterface interface {
 
 // GoodsService init structure for goods service
 type GoodsService struct {
-	repo repos.GoodsRepoInterface
+	repo GoodsRepoInterface
 }
 
 // NewGoodsService init func for goods service
-func NewGoodsService(repo repos.GoodsRepoInterface) *GoodsService {
+func NewGoodsService(repo GoodsRepoInterface) *GoodsService {
 	return &GoodsService{repo: repo}
 }

@@ -2,23 +2,18 @@ package main
 
 import (
 	"fmt"
+	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
-	"my_goods/configs"
-	"my_goods/internal/handlers"
-	"my_goods/internal/repos"
-	"my_goods/internal/services"
+	initial "my_goods/init"
 )
 
 func main() {
-	configs.InitEnv()
-	db := configs.InitDB(configs.NewDatabaseConf())
-
-	repo := repos.NewRepository(db)
-	service := services.NewService(repo)
-	handler := handlers.NewHandler(service)
-
-	server := handler.InitRoutes()
-	err := server.Run(fmt.Sprintf("%s:%s", configs.Host, configs.Port))
+	initial.Env()
+	db := initial.InitDB(initial.NewDatabaseConf())
+	handler := gin.New()
+	handler.Use(gin.Logger())
+	server := initial.Router(db, handler)
+	err := server.Run(fmt.Sprintf("%s:%s", initial.Host, initial.Port))
 	if err != nil {
 		logrus.Fatalf("Error while running server")
 	}

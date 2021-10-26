@@ -1,4 +1,4 @@
-package configs
+package init
 
 import (
 	"github.com/joho/godotenv"
@@ -18,7 +18,7 @@ var (
 	SslMode string
 )
 
-func InitEnv() {
+func Env() {
 	err := godotenv.Load()
 	if err != nil {
 		logrus.Warning("Error loading .env file, continue without it.")

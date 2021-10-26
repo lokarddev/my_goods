@@ -1,4 +1,4 @@
-package repos
+package list
 
 import "gorm.io/gorm"
 

@@ -1,4 +1,4 @@
-package repos
+package dish
 
 import "gorm.io/gorm"
 

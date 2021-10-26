@@ -1,4 +1,4 @@
-package repos
+package goods
 
 import "gorm.io/gorm"
 
@@ -12,6 +12,6 @@ type GoodsRepoInterface interface {
 }
 
 // NewGoodsRepo init func for goods repository
-func NewGoodsRepo(db *gorm.DB) *DishRepo {
-	return &DishRepo{db: db}
+func NewGoodsRepo(db *gorm.DB) *GoodsRepo {
+	return &GoodsRepo{db: db}
 }

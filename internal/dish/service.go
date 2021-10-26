@@ -1,6 +1,4 @@
-package services
-
-import "my_goods/internal/repos"
+package dish
 
 // DishServiceInterface dish service behaviour
 type DishServiceInterface interface {
@@ -8,10 +6,10 @@ type DishServiceInterface interface {
 
 // DishService init structure for dish service
 type DishService struct {
-	repo repos.DishRepoInterface
+	repo DishRepoInterface
 }
 
 // NewDishService init func for dish service
-func NewDishService(repo repos.DishRepoInterface) *DishService {
+func NewDishService(repo DishRepoInterface) *DishService {
 	return &DishService{repo: repo}
 }
