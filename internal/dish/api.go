@@ -2,7 +2,10 @@ package dish
 
 import (
 	"github.com/gin-gonic/gin"
+	"my_goods/internal/entity"
+	"my_goods/pkg/logger"
 	"net/http"
+	"strconv"
 )
 
 type Handler struct {
@@ -21,29 +24,55 @@ func (h *Handler) RegisterRoutes(router *gin.Engine) {
 			dish.GET("/:id", h.getDish)
 			dish.GET("/", h.getAllDishes)
 			dish.POST("/", h.createDish)
-			dish.PUT("/:id", h.updateDish)
+			dish.PUT("/", h.updateDish)
 			dish.DELETE("/:id", h.deleteDish)
 		}
 	}
 }
 
 func (h *Handler) getDish(c *gin.Context) {
-
-	c.JSON(http.StatusOK, map[string]string{"Hello": "world"})
+	id, err := strconv.Atoi(c.Param("id"))
+	dish := h.services.getDish(id)
+	if err != nil {
+		logger.Error(err)
+		c.AbortWithStatusJSON(http.StatusInternalServerError, map[string]string{"ERROR": err.Error()})
+	}
+	c.JSON(http.StatusOK, *dish)
 }
 
 func (h *Handler) getAllDishes(c *gin.Context) {
-	c.JSON(http.StatusOK, map[string]string{"Hello": "world"})
+	allGoods := h.services.getAllDishes()
+	c.JSON(http.StatusOK, *allGoods)
 }
 
 func (h *Handler) createDish(c *gin.Context) {
-	c.JSON(http.StatusOK, map[string]string{"Hello": "world"})
+	dish := entity.Dish{}
+	err := c.Bind(&dish)
+	dishes := h.services.createDish(&dish)
+	if err != nil {
+		logger.Error(err)
+		c.AbortWithStatusJSON(http.StatusInternalServerError, map[string]string{"ERROR": err.Error()})
+	}
+	c.JSON(http.StatusOK, *dishes)
 }
 
 func (h *Handler) updateDish(c *gin.Context) {
-	c.JSON(http.StatusOK, map[string]string{"Hello": "world"})
+	dish := entity.Dish{}
+	err := c.Bind(&dish)
+	dishes := h.services.updateDish(&dish)
+	if err != nil {
+		logger.Error(err)
+		c.AbortWithStatusJSON(http.StatusInternalServerError, map[string]string{"ERROR": err.Error()})
+	}
+	c.JSON(http.StatusOK, *dishes)
 }
 
 func (h *Handler) deleteDish(c *gin.Context) {
-	c.JSON(http.StatusOK, map[string]string{"Hello": "world"})
+	id, err := strconv.Atoi(c.Param("id"))
+	h.services.deleteDish(id)
+	if err != nil {
+		logger.Error(err)
+		c.AbortWithStatusJSON(http.StatusInternalServerError, map[string]string{"ERROR": err.Error()})
+	}
+	c.Status(http.StatusOK)
 }
