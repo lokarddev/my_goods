@@ -1,4 +1,4 @@
-package init
+package environ
 
 import (
 	"github.com/joho/godotenv"

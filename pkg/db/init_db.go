@@ -1,4 +1,4 @@
-package init
+package db
 
 import (
 	"fmt"
@@ -6,6 +6,7 @@ import (
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"my_goods/internal/entity"
+	"my_goods/pkg/environ"
 )
 
 type DbConfig struct {
@@ -19,12 +20,12 @@ type DbConfig struct {
 
 func NewDatabaseConf() *DbConfig {
 	return &DbConfig{
-		Host:     DbHost,
-		Port:     DbPort,
-		DbName:   DbName,
-		Username: DbUser,
-		Password: DbPass,
-		SslMode:  SslMode,
+		Host:     environ.DbHost,
+		Port:     environ.DbPort,
+		DbName:   environ.DbName,
+		Username: environ.DbUser,
+		Password: environ.DbPass,
+		SslMode:  environ.SslMode,
 	}
 }
 

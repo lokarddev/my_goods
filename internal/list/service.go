@@ -9,3 +9,18 @@ type Service struct {
 func NewListService(repo Repository) *Service {
 	return &Service{repo: repo}
 }
+
+func (s *Service) getGoods() {
+}
+
+func (s *Service) getAllGoods() {
+}
+
+func (s *Service) createGoods() {
+}
+
+func (s *Service) updateGoods() {
+}
+
+func (s *Service) deleteGoods() {
+}
