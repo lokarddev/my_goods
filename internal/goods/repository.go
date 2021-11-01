@@ -28,12 +28,12 @@ func (r *Repository) getAllGoods() *[]entity.Goods {
 }
 
 func (r *Repository) createGoods(good *entity.Goods) *entity.Goods {
-	r.db.Create(good)
+	r.db.Create(&good)
 	return good
 }
 
 func (r *Repository) updateGoods(good *entity.Goods) *entity.Goods {
-	r.db.Model(&good).Updates(good)
+	r.db.Model(&good).Updates(&good)
 	return good
 }
 

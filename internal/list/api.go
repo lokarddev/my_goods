@@ -2,7 +2,10 @@ package list
 
 import (
 	"github.com/gin-gonic/gin"
+	"my_goods/internal/entity"
+	"my_goods/pkg/logger"
 	"net/http"
+	"strconv"
 )
 
 type Handler struct {
@@ -28,21 +31,48 @@ func (h *Handler) RegisterRoutes(router *gin.Engine) {
 }
 
 func (h *Handler) getList(c *gin.Context) {
-	c.JSON(http.StatusOK, map[string]string{"Hello": "world"})
+	id, err := strconv.Atoi(c.Param("id"))
+	list := h.services.getList(id)
+	if err != nil {
+		logger.Error(err)
+		c.AbortWithStatusJSON(http.StatusInternalServerError, map[string]string{"ERROR": err.Error()})
+	}
+	c.JSON(http.StatusOK, *list)
 }
 
 func (h *Handler) getAllLists(c *gin.Context) {
-	c.JSON(http.StatusOK, map[string]string{"Hello": "world"})
+	allList := h.services.getAllLists()
+	c.JSON(http.StatusOK, *allList)
 }
 
 func (h *Handler) createList(c *gin.Context) {
-	c.JSON(http.StatusOK, map[string]string{"Hello": "world"})
+	list := entity.List{}
+	err := c.Bind(&list)
+	lists := h.services.createList(&list)
+	if err != nil {
+		logger.Error(err)
+		c.AbortWithStatusJSON(http.StatusInternalServerError, map[string]string{"ERROR": err.Error()})
+	}
+	c.JSON(http.StatusOK, *lists)
 }
 
 func (h *Handler) updateList(c *gin.Context) {
-	c.JSON(http.StatusOK, map[string]string{"Hello": "world"})
+	list := entity.List{}
+	err := c.Bind(&list)
+	lists := h.services.updateList(&list)
+	if err != nil {
+		logger.Error(err)
+		c.AbortWithStatusJSON(http.StatusInternalServerError, map[string]string{"ERROR": err.Error()})
+	}
+	c.JSON(http.StatusOK, *lists)
 }
 
 func (h *Handler) deleteList(c *gin.Context) {
-	c.JSON(http.StatusOK, map[string]string{"Hello": "world"})
+	id, err := strconv.Atoi(c.Param("id"))
+	h.services.deleteList(id)
+	if err != nil {
+		logger.Error(err)
+		c.AbortWithStatusJSON(http.StatusInternalServerError, map[string]string{"ERROR": err.Error()})
+	}
+	c.Status(http.StatusOK)
 }

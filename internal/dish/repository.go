@@ -28,12 +28,12 @@ func (r *Repository) getAllDishes() *[]entity.Dish {
 }
 
 func (r *Repository) createDish(dish *entity.Dish) *entity.Dish {
-	r.db.Create(dish)
+	r.db.Create(&dish)
 	return dish
 }
 
 func (r *Repository) updateDish(dish *entity.Dish) *entity.Dish {
-	r.db.Model(&dish).Updates(dish)
+	r.db.Model(&dish).Updates(&dish)
 	return dish
 }
 
