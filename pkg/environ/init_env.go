@@ -52,13 +52,13 @@ func Env() {
 }
 
 func testEnv() {
-	Host = viper.GetString("Host")
-	Port = viper.GetString("Port")
+	Host = viper.GetString("host")
+	Port = viper.GetString("port")
 
-	DbHost = viper.GetString("db.Host")
-	DbPort = viper.GetString("db.Port")
-	DbUser = viper.GetString("db.User")
-	DbPass = viper.GetString("db.Pass")
-	DbName = viper.GetString("db.Name")
-	SslMode = viper.GetString("db.SslMode")
+	DbHost = viper.GetString("db.host")
+	DbPort = viper.GetString("db.port")
+	DbUser = viper.GetString("db.user")
+	DbPass = viper.GetString("db.pwd")
+	DbName = viper.GetString("db.name")
+	SslMode = viper.GetString("db.sslMode")
 }

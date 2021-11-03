@@ -6,6 +6,8 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_DB=my_goods
+    expose:
+      - 5432
     ports:
       - 5436:5432
     networks:
@@ -13,15 +15,17 @@ services:
 
   app:
     build: .
+    expose:
+      - 8001
     ports:
-      - 8000:8000
+      - 8001:8001
     depends_on:
       - postgres
     command: sh -c "/wait && /app/cmd/goods"
     environment:
       - WAIT_HOSTS=postgres:5432
       - WAIT_HOSTS_TIMEOUT=20
-      - WAIT_SLEEP_INTERVAL=10
+      - WAIT_SLEEP_INTERVAL=5
       - WAIT_HOST_CONNECT_TIMEOUT=20
     links:
       - postgres

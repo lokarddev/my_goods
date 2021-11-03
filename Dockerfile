@@ -7,7 +7,7 @@ RUN go mod download
 COPY ./ ./
 WORKDIR /app/cmd
 RUN go build -o goods
-EXPOSE 8000
+EXPOSE 8001
 
 ENV WAIT_VERSION 2.7.2
 ADD https://github.com/ufoscout/docker-compose-wait/releases/download/$WAIT_VERSION/wait /wait
