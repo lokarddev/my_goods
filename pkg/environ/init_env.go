@@ -22,13 +22,15 @@ var (
 func Env() {
 	err := godotenv.Load()
 	if err != nil {
-		viper.AddConfigPath("configs")
+		viper.AddConfigPath("/configs")
 		viper.SetConfigName("local")
+		viper.SetConfigType("yml")
+		viper.AddConfigPath("/app/configs/")
 		err = viper.ReadInConfig()
 		if err != nil {
 			logger.Error(err)
 		}
-		logger.Info("Error loading .env file, continue with rest environment vars.")
+		logger.Info("Error loading .env file, continue with test environment vars.")
 		testEnv()
 		return
 	}
@@ -52,6 +54,7 @@ func Env() {
 func testEnv() {
 	Host = viper.GetString("Host")
 	Port = viper.GetString("Port")
+
 	DbHost = viper.GetString("db.Host")
 	DbPort = viper.GetString("db.Port")
 	DbUser = viper.GetString("db.User")

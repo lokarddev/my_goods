@@ -1,9 +1,9 @@
 Host: "localhost"
 Port: "8000"
 db:
-  Host: "localhost"
+  Host: "postgres"
   Port: "5432"
   Name: "my_goods"
   User: "postgres"
-  Password: "lok1415161213"
+  Password: "postgres"
   SslMode: "disable"
