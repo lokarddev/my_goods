@@ -1,0 +1,10 @@
+# default docker container environment variables. It's static, redefining it, you should provide containers interaction
+# changes to prevent errors
+port: "8001"
+db:
+  host: "postgres"
+  port: "5432"
+  name: "my_goods"
+  user: "postgres"
+  pwd: "postgres"
+  sslMode: "disable"

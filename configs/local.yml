@@ -1,9 +1,10 @@
-host: "0.0.0.0"
-port: "8001"
+# DEFAULT CONF FILE. YOU SHOULD REDEFINE HERE YOUR LOCAL ENVIRONMENT VARS IF YOU PREFER TO USE THEM AS CONFIGS
+
+port: "app_port"
 db:
-  host: "postgres"
-  port: "5432"
-  name: "my_goods"
-  user: "postgres"
-  pwd: "postgres"
-  sslMode: "disable"
+  host: "db_host"
+  port: "db_port"
+  name: "db_name"
+  user: "db_user"
+  pwd: "db_pass"
+  sslMode: "ssl_mode"

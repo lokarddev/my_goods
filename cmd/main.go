@@ -18,7 +18,7 @@ func main() {
 	handler := gin.New()
 	handler.Use(gin.Logger())
 	server := Router(database, handler)
-	err = server.Run(fmt.Sprintf("%s:%s", environ.Host, environ.Port))
+	err = server.Run(fmt.Sprintf(":%s", environ.Port))
 	if err != nil {
 		logrus.Fatalf("Error while running server")
 	}
