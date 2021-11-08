@@ -1,43 +1,49 @@
 package dish
 
 import (
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
-	"gorm.io/gorm"
-	"my_goods/pkg/db"
-	"my_goods/pkg/environ"
+	"my_goods/internal/entity"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 )
 
-const (
-	dish = "/api/dish"
-)
-
 var (
-	testDb      *gorm.DB
-	testHandler *gin.Engine
-	TS          *httptest.Server
+	service     = mockService{}
+	testHandler = NewDishHandler(&service)
 )
 
-func init() {
-	environ.Env()
-	testDb, _ = db.DB(db.NewDatabaseConf())
-	testHandler = gin.New()
+type mockService struct{}
 
-	dishRepo := NewDishRepo(testDb)
-	dishService := NewDishService(*dishRepo)
-	TestDishHandler := NewDishHandler(dishService)
-	TestDishHandler.RegisterRoutes(testHandler)
+func (s *mockService) GetDish(id int) *entity.Dish {
+	dish := entity.Dish{}
+	return &dish
 }
 
-func TestGetDish(t *testing.T) {
-	TS = httptest.NewServer(testHandler)
-	defer TS.Close()
+func (s *mockService) GetAllDishes() *[]entity.Dish {
+	var dishes []entity.Dish
+	return &dishes
+}
 
-	resp, err := http.Get(fmt.Sprintf("%s%s", TS.URL, dish))
-	assert.Nil(t, err)
-	assert.Equal(t, http.StatusOK, resp.StatusCode)
+func (s *mockService) CreateDish(dish *entity.Dish) *entity.Dish {
+	result := entity.Dish{}
+	return &result
+}
+
+func (s *mockService) UpdateDish(dish *entity.Dish) *entity.Dish {
+	result := entity.Dish{}
+	return &result
+}
+
+func (s *mockService) DeleteDish(id int) {
+	_ = entity.Dish{}
+}
+
+func TestAllDishesDish(t *testing.T) {
+	response := httptest.NewRecorder()
+	c, _ := gin.CreateTestContext(response)
+	c.Request, _ = http.NewRequest(http.MethodGet, "", nil)
+	testHandler.GetAllDishes(c)
+	assert.Equal(t, http.StatusOK, response.Code)
 }

@@ -29,7 +29,7 @@ func Router(db *gorm.DB, router *gin.Engine) *gin.Engine {
 	goodsRepo := goods.NewGoodsRepo(db)
 	listRepo := list.NewListRepo(db)
 
-	dishService := dish.NewDishService(*dishRepo)
+	dishService := dish.NewDishService(dishRepo)
 	goodsService := goods.NewGoodsService(*goodsRepo)
 	listService := list.NewListService(*listRepo)
 

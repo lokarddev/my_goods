@@ -8,11 +8,15 @@ import (
 	"strconv"
 )
 
-type Handler struct {
-	services *Service
+type HandleDish interface {
+	GetAllDishes(c *gin.Context)
 }
 
-func NewDishHandler(services *Service) *Handler {
+type Handler struct {
+	services ServeDish
+}
+
+func NewDishHandler(services ServeDish) *Handler {
 	return &Handler{services: services}
 }
 
@@ -21,18 +25,18 @@ func (h *Handler) RegisterRoutes(router *gin.Engine) {
 	{
 		dish := api.Group("/dish")
 		{
-			dish.GET("/:id", h.getDish)
-			dish.GET("/", h.getAllDishes)
-			dish.POST("/", h.createDish)
-			dish.PUT("/", h.updateDish)
-			dish.DELETE("/:id", h.deleteDish)
+			dish.GET("/:id", h.GetDish)
+			dish.GET("/", h.GetAllDishes)
+			dish.POST("/", h.CreateDish)
+			dish.PUT("/", h.UpdateDish)
+			dish.DELETE("/:id", h.DeleteDish)
 		}
 	}
 }
 
-func (h *Handler) getDish(c *gin.Context) {
+func (h *Handler) GetDish(c *gin.Context) {
 	id, err := strconv.Atoi(c.Param("id"))
-	dish := h.services.getDish(id)
+	dish := h.services.GetDish(id)
 	if err != nil {
 		logger.Error(err)
 		c.AbortWithStatusJSON(http.StatusInternalServerError, map[string]string{"ERROR": err.Error()})
@@ -40,15 +44,15 @@ func (h *Handler) getDish(c *gin.Context) {
 	c.JSON(http.StatusOK, *dish)
 }
 
-func (h *Handler) getAllDishes(c *gin.Context) {
-	allGoods := h.services.getAllDishes()
+func (h *Handler) GetAllDishes(c *gin.Context) {
+	allGoods := h.services.GetAllDishes()
 	c.JSON(http.StatusOK, *allGoods)
 }
 
-func (h *Handler) createDish(c *gin.Context) {
+func (h *Handler) CreateDish(c *gin.Context) {
 	dish := entity.Dish{}
 	err := c.Bind(&dish)
-	dishes := h.services.createDish(&dish)
+	dishes := h.services.CreateDish(&dish)
 	if err != nil {
 		logger.Error(err)
 		c.AbortWithStatusJSON(http.StatusInternalServerError, map[string]string{"ERROR": err.Error()})
@@ -56,10 +60,10 @@ func (h *Handler) createDish(c *gin.Context) {
 	c.JSON(http.StatusOK, *dishes)
 }
 
-func (h *Handler) updateDish(c *gin.Context) {
+func (h *Handler) UpdateDish(c *gin.Context) {
 	dish := entity.Dish{}
 	err := c.Bind(&dish)
-	dishes := h.services.updateDish(&dish)
+	dishes := h.services.UpdateDish(&dish)
 	if err != nil {
 		logger.Error(err)
 		c.AbortWithStatusJSON(http.StatusInternalServerError, map[string]string{"ERROR": err.Error()})
@@ -67,9 +71,9 @@ func (h *Handler) updateDish(c *gin.Context) {
 	c.JSON(http.StatusOK, *dishes)
 }
 
-func (h *Handler) deleteDish(c *gin.Context) {
+func (h *Handler) DeleteDish(c *gin.Context) {
 	id, err := strconv.Atoi(c.Param("id"))
-	h.services.deleteDish(id)
+	h.services.DeleteDish(id)
 	if err != nil {
 		logger.Error(err)
 		c.AbortWithStatusJSON(http.StatusInternalServerError, map[string]string{"ERROR": err.Error()})

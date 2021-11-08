@@ -2,32 +2,40 @@ package dish
 
 import "my_goods/internal/entity"
 
+type ServeDish interface {
+	GetAllDishes() *[]entity.Dish
+	GetDish(id int) *entity.Dish
+	CreateDish(dish *entity.Dish) *entity.Dish
+	UpdateDish(dish *entity.Dish) *entity.Dish
+	DeleteDish(id int)
+}
+
 // Service init structure for dish service
 type Service struct {
-	repo Repository
+	repo RepoDish
 }
 
 // NewDishService init func for dish service
-func NewDishService(repo Repository) *Service {
+func NewDishService(repo RepoDish) *Service {
 	return &Service{repo: repo}
 }
 
-func (s *Service) getDish(id int) *entity.Dish {
-	return s.repo.getDish(id)
+func (s *Service) GetDish(id int) *entity.Dish {
+	return s.repo.GetDish(id)
 }
 
-func (s *Service) getAllDishes() *[]entity.Dish {
-	return s.repo.getAllDishes()
+func (s *Service) GetAllDishes() *[]entity.Dish {
+	return s.repo.GetAllDishes()
 }
 
-func (s *Service) createDish(dish *entity.Dish) *entity.Dish {
-	return s.repo.createDish(dish)
+func (s *Service) CreateDish(dish *entity.Dish) *entity.Dish {
+	return s.repo.CreateDish(dish)
 }
 
-func (s *Service) updateDish(dish *entity.Dish) *entity.Dish {
-	return s.repo.updateDish(dish)
+func (s *Service) UpdateDish(dish *entity.Dish) *entity.Dish {
+	return s.repo.UpdateDish(dish)
 }
 
-func (s *Service) deleteDish(id int) {
-	s.repo.deleteDish(id)
+func (s *Service) DeleteDish(id int) {
+	s.repo.DeleteDish(id)
 }

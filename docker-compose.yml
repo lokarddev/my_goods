@@ -23,6 +23,15 @@ services:
       - postgres
     command: sh -c "/wait && /app/cmd/goods"
     environment:
+      - PORT=8001
+      - DB_USER=postgres
+      - DB_PASS=postgres
+      - DB_NAME=my_goods
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - SSL_MODE=disable
+      - DEBUG=true
+
       - WAIT_HOSTS=postgres:5432
       - WAIT_HOSTS_TIMEOUT=20
       - WAIT_SLEEP_INTERVAL=5
