@@ -29,7 +29,7 @@ func NewDatabaseConf() *DbConfig {
 	}
 }
 
-func DB(cfg *DbConfig) *gorm.DB {
+func DB(cfg *DbConfig) (*gorm.DB, error) {
 	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=%s", cfg.Host, cfg.Username, cfg.Password, cfg.DbName, cfg.Port, cfg.SslMode)
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
@@ -41,5 +41,5 @@ func DB(cfg *DbConfig) *gorm.DB {
 	if err != nil {
 		logrus.Error(err)
 	}
-	return db
+	return db, err
 }
