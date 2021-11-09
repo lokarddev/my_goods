@@ -36,10 +36,15 @@ func (h *Handler) RegisterRoutes(router *gin.Engine) {
 
 func (h *Handler) GetDish(c *gin.Context) {
 	id, err := strconv.Atoi(c.Param("id"))
-	dish := h.services.GetDish(id)
 	if err != nil {
 		logger.Error(err)
-		c.AbortWithStatusJSON(http.StatusInternalServerError, map[string]string{"ERROR": err.Error()})
+		c.AbortWithStatusJSON(http.StatusBadRequest, map[string]string{"ERROR": err.Error()})
+		return
+	}
+	dish := h.services.GetDish(id)
+	if dish.ID == 0 {
+		c.AbortWithStatus(http.StatusNotFound)
+		return
 	}
 	c.JSON(http.StatusOK, *dish)
 }
@@ -50,23 +55,25 @@ func (h *Handler) GetAllDishes(c *gin.Context) {
 }
 
 func (h *Handler) CreateDish(c *gin.Context) {
-	dish := entity.Dish{}
-	err := c.Bind(&dish)
+	var dish entity.Dish
+	err := c.BindJSON(&dish)
 	dishes := h.services.CreateDish(&dish)
 	if err != nil {
 		logger.Error(err)
 		c.AbortWithStatusJSON(http.StatusInternalServerError, map[string]string{"ERROR": err.Error()})
+		return
 	}
 	c.JSON(http.StatusOK, *dishes)
 }
 
 func (h *Handler) UpdateDish(c *gin.Context) {
 	dish := entity.Dish{}
-	err := c.Bind(&dish)
+	err := c.BindJSON(&dish)
 	dishes := h.services.UpdateDish(&dish)
 	if err != nil {
 		logger.Error(err)
 		c.AbortWithStatusJSON(http.StatusInternalServerError, map[string]string{"ERROR": err.Error()})
+		return
 	}
 	c.JSON(http.StatusOK, *dishes)
 }
@@ -77,6 +84,7 @@ func (h *Handler) DeleteDish(c *gin.Context) {
 	if err != nil {
 		logger.Error(err)
 		c.AbortWithStatusJSON(http.StatusInternalServerError, map[string]string{"ERROR": err.Error()})
+		return
 	}
 	c.Status(http.StatusOK)
 }
