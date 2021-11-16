@@ -20,15 +20,6 @@ func NewAuthHandler(services ServeAuth) *Handler {
 	return &Handler{services: services}
 }
 
-func (h *Handler) RegisterRoutes(router *gin.Engine) {
-	auth := router.Group("/auth")
-	{
-		auth.POST("/sign-in", h.SignIn)
-		auth.POST("/sign-up", h.SignUp)
-	}
-	_ = router.Group("/api", h.AuthMiddleware)
-}
-
 func (h *Handler) SignIn(c *gin.Context) {
 	var input Auth
 	if err := c.BindJSON(&input); err != nil {
