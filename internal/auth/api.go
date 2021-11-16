@@ -61,12 +61,12 @@ func (h *Handler) SignUp(c *gin.Context) {
 func (h *Handler) AuthMiddleware(c *gin.Context) {
 	header := strings.Split(c.GetHeader("Authorization"), " ")
 	if len(header) != 2 {
-		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"ERROR": "invalid authentication"})
+		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"ERROR": "unauthenticated"})
 		return
 	}
 	user, err := h.services.ParseToken(header[1])
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"ERROR": "something goes wrong try again"})
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"ERROR": "unauthenticated"})
 		return
 	}
 	c.Set("user", user)
