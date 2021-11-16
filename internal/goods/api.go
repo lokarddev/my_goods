@@ -16,21 +16,7 @@ func NewGoodsHandler(services *Service) *Handler {
 	return &Handler{services: services}
 }
 
-func (h *Handler) RegisterRoutes(router *gin.Engine) {
-	api := router.Group("/api")
-	{
-		goods := api.Group("/goods")
-		{
-			goods.GET("/:id", h.getGoods)
-			goods.GET("/", h.getAllGoods)
-			goods.POST("/", h.createGoods)
-			goods.PUT("/", h.updateGoods)
-			goods.DELETE("/:id", h.deleteGoods)
-		}
-	}
-}
-
-func (h *Handler) getGoods(c *gin.Context) {
+func (h *Handler) GetGoods(c *gin.Context) {
 	id, err := strconv.Atoi(c.Param("id"))
 	goods := h.services.getGoods(id)
 	if err != nil {
@@ -40,12 +26,12 @@ func (h *Handler) getGoods(c *gin.Context) {
 	c.JSON(http.StatusOK, *goods)
 }
 
-func (h *Handler) getAllGoods(c *gin.Context) {
+func (h *Handler) GetAllGoods(c *gin.Context) {
 	allGoods := h.services.getAllGoods()
 	c.JSON(http.StatusOK, *allGoods)
 }
 
-func (h *Handler) createGoods(c *gin.Context) {
+func (h *Handler) CreateGoods(c *gin.Context) {
 	good := entity.Goods{}
 	err := c.Bind(&good)
 	goods := h.services.createGoods(&good)
@@ -56,7 +42,7 @@ func (h *Handler) createGoods(c *gin.Context) {
 	c.JSON(http.StatusOK, *goods)
 }
 
-func (h *Handler) updateGoods(c *gin.Context) {
+func (h *Handler) UpdateGoods(c *gin.Context) {
 	good := entity.Goods{}
 	err := c.Bind(&good)
 	goods := h.services.updateGoods(&good)
@@ -67,7 +53,7 @@ func (h *Handler) updateGoods(c *gin.Context) {
 	c.JSON(http.StatusOK, *goods)
 }
 
-func (h *Handler) deleteGoods(c *gin.Context) {
+func (h *Handler) DeleteGoods(c *gin.Context) {
 	id, err := strconv.Atoi(c.Param("id"))
 	h.services.deleteGoods(id)
 	if err != nil {

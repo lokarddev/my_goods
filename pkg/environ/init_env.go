@@ -4,18 +4,18 @@ import (
 	"github.com/joho/godotenv"
 	"my_goods/pkg/logger"
 	"os"
-	"strconv"
 )
 
 var (
 	Port    string
-	Debug   bool
 	DbHost  string
 	DbPort  string
 	DbUser  string
 	DbPass  string
 	DbName  string
 	SslMode string
+
+	Salt string
 )
 
 func Env() {
@@ -27,7 +27,6 @@ func Env() {
 	if err != nil {
 		logger.Info(".env file cannot be read, continue with default environment vars.")
 	}
-	Debug, _ = strconv.ParseBool(os.Getenv("DEBUG"))
 	Port = os.Getenv("PORT")
 	DbHost = os.Getenv("DB_HOST")
 	DbPort = os.Getenv("DB_PORT")
@@ -35,4 +34,5 @@ func Env() {
 	DbPass = os.Getenv("DB_PASS")
 	DbName = os.Getenv("DB_NAME")
 	SslMode = os.Getenv("SSL_MODE")
+	Salt = os.Getenv("SALT")
 }

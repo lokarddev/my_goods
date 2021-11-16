@@ -8,30 +8,12 @@ import (
 	"strconv"
 )
 
-type HandleDish interface {
-	GetAllDishes(c *gin.Context)
-}
-
 type Handler struct {
 	services ServeDish
 }
 
 func NewDishHandler(services ServeDish) *Handler {
 	return &Handler{services: services}
-}
-
-func (h *Handler) RegisterRoutes(router *gin.Engine) {
-	api := router.Group("/api")
-	{
-		dish := api.Group("/dish")
-		{
-			dish.GET("/:id", h.GetDish)
-			dish.GET("/", h.GetAllDishes)
-			dish.POST("/", h.CreateDish)
-			dish.PUT("/", h.UpdateDish)
-			dish.DELETE("/:id", h.DeleteDish)
-		}
-	}
 }
 
 func (h *Handler) GetDish(c *gin.Context) {

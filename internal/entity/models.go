@@ -21,3 +21,15 @@ type List struct {
 	Title       string
 	Description string
 }
+
+type User struct {
+	gorm.Model
+	Login string `json:"login"`
+	Pass  string `json:"pass"`
+}
+
+type Token struct {
+	gorm.Model
+	User   User `json:"user" gorm:"foreignKey:UserID"`
+	UserID int  `json:"user_id"`
+}
