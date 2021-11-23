@@ -12,10 +12,12 @@ import (
 func main() {
 	environ.Env()
 	database, err := db.DB(db.NewDatabaseConf())
+
 	handler := gin.New()
 	handler.Use(gin.Logger())
+
 	server := router.Router(database, handler)
-	err = server.Run(fmt.Sprintf(":%s", environ.Port))
+	err = server.Run(fmt.Sprintf("localhost:%s", environ.Port))
 	if err != nil {
 		logrus.Fatalf("Error while running server")
 	}

@@ -1,6 +1,7 @@
 package router
 
 import (
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 	"my_goods/internal/auth"
@@ -10,6 +11,11 @@ import (
 )
 
 func Router(db *gorm.DB, router *gin.Engine) *gin.Engine {
+
+	c := cors.DefaultConfig()
+	c.AllowAllOrigins = true
+	router.Use(cors.New(c))
+
 	dishRepo := dish.NewDishRepo(db)
 	dishService := dish.NewDishService(dishRepo)
 	dishHandler := dish.NewDishHandler(dishService)
