@@ -33,9 +33,11 @@ func (s *Server) Shutdown(ctx context.Context) error {
 }
 
 func Router(db *gorm.DB) *gin.Engine {
-	handler := gin.New()
-	handler.Use(gin.Logger())
-	handler.Use(cors.Default())
+	router := gin.New()
+	config := cors.DefaultConfig()
+	config.AllowAllOrigins = true
+	config.AllowHeaders = append(config.AllowHeaders, "authorization")
+	router.Use(gin.Logger(), cors.New(config))
 
 	dishRepo := dish.NewDishRepo(db)
 	dishService := dish.NewDishService(dishRepo)
@@ -53,12 +55,12 @@ func Router(db *gorm.DB) *gin.Engine {
 	authService := auth.NewAuthService(authRepo)
 	authHandler := auth.NewAuthHandler(authService)
 
-	a := handler.Group("/auth")
+	a := router.Group("/auth")
 	{
 		a.POST("/sign-in", authHandler.SignIn)
 		a.POST("/sign-up", authHandler.SignUp)
 	}
-	api := handler.Group("/api", authHandler.AuthMiddleware)
+	api := router.Group("/api", authHandler.AuthMiddleware)
 	{
 		d := api.Group("/dish")
 		{
@@ -85,5 +87,5 @@ func Router(db *gorm.DB) *gin.Engine {
 			l.DELETE("/:id", listHandler.DeleteList)
 		}
 	}
-	return handler
+	return router
 }

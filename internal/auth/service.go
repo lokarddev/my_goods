@@ -5,15 +5,13 @@ import (
 	"errors"
 	"fmt"
 	"github.com/dgrijalva/jwt-go"
-	"math/rand"
 	"my_goods/pkg/environ"
 	"my_goods/pkg/logger"
 	"time"
 )
 
 var (
-	ttl        = time.Minute * time.Duration(environ.Ttl)
-	signingKey = randomString(10)
+	signingKey = "someverysecretkey"
 )
 
 type ServeAuth interface {
@@ -67,23 +65,12 @@ func (s *Service) GenerateToken(input Auth) (string, error) {
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, &tokenClaims{
 		StandardClaims: jwt.StandardClaims{
-			ExpiresAt: time.Now().Add(ttl).Unix(),
+			ExpiresAt: time.Now().Unix() + int64(time.Duration(environ.Ttl)),
 			IssuedAt:  time.Now().Unix(),
 		},
 		UserId: userId,
 	})
 	return token.SignedString([]byte(signingKey))
-}
-
-func randomString(length int) string {
-	const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
-	var seededRand = rand.New(
-		rand.NewSource(time.Now().UnixNano()))
-	b := make([]byte, length)
-	for i := range b {
-		b[i] = charset[seededRand.Intn(len(charset))]
-	}
-	return string(b)
 }
 
 func randHash(password string) string {
