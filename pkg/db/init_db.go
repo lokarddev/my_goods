@@ -35,11 +35,7 @@ func DB(cfg *DbConfig) (*gorm.DB, error) {
 	if err != nil {
 		logrus.Error(err)
 	}
-	err = db.AutoMigrate(&entity.User{})
-	err = db.AutoMigrate(&entity.Token{})
-	err = db.AutoMigrate(&entity.Goods{})
-	err = db.AutoMigrate(&entity.Dish{})
-	err = db.AutoMigrate(&entity.List{})
+	err = db.AutoMigrate(&entity.User{}, &entity.Token{}, &entity.Goods{}, &entity.Dish{}, &entity.List{})
 	if err != nil {
 		logrus.Error(err)
 	}

@@ -4,6 +4,7 @@ import (
 	"github.com/joho/godotenv"
 	"my_goods/pkg/logger"
 	"os"
+	"strconv"
 )
 
 var (
@@ -16,6 +17,7 @@ var (
 	SslMode string
 
 	Salt string
+	Ttl  int
 )
 
 func Env() {
@@ -35,4 +37,5 @@ func Env() {
 	DbName = os.Getenv("DB_NAME")
 	SslMode = os.Getenv("SSL_MODE")
 	Salt = os.Getenv("SALT")
+	Ttl, _ = strconv.Atoi(os.Getenv("TTL"))
 }

@@ -4,7 +4,7 @@ import "gorm.io/gorm"
 
 type Dish struct {
 	gorm.Model
-	Goods       *[]Goods `gorm:"many2many:dish_goods;"`
+	Goods       []Goods `gorm:"many2many:dish_goods;"`
 	Title       string
 	Description string
 }
@@ -17,14 +17,14 @@ type Goods struct {
 
 type List struct {
 	gorm.Model
-	Dishes      *[]Dish `gorm:"many2many:list_dishes;"`
+	Dishes      []Dish `gorm:"many2many:list_dishes;"`
 	Title       string
 	Description string
 }
 
 type User struct {
 	gorm.Model
-	Login string `json:"login"`
+	Login string `json:"login" gorm:"unique"`
 	Pass  string `json:"pass"`
 }
 

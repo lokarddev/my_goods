@@ -12,7 +12,7 @@ import (
 )
 
 var (
-	ttl        = time.Minute * 5
+	ttl        = time.Minute * time.Duration(environ.Ttl)
 	signingKey = randomString(10)
 )
 
