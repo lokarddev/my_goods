@@ -1,6 +1,7 @@
-package router
+package server
 
 import (
+	"context"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
@@ -8,13 +9,33 @@ import (
 	"my_goods/internal/dish"
 	"my_goods/internal/goods"
 	"my_goods/internal/list"
+	"net/http"
+	"time"
 )
 
-func Router(db *gorm.DB, router *gin.Engine) *gin.Engine {
+type Server struct {
+	httpServer *http.Server
+}
 
-	c := cors.DefaultConfig()
-	c.AllowAllOrigins = true
-	router.Use(cors.New(c))
+func (s *Server) Run(port string, handler http.Handler) error {
+	s.httpServer = &http.Server{
+		Addr:           ":" + port,
+		Handler:        handler,
+		MaxHeaderBytes: 1 << 20,
+		ReadTimeout:    10 * time.Second,
+		WriteTimeout:   10 * time.Second,
+	}
+	return s.httpServer.ListenAndServe()
+}
+
+func (s *Server) Shutdown(ctx context.Context) error {
+	return s.httpServer.Shutdown(ctx)
+}
+
+func Router(db *gorm.DB) *gin.Engine {
+	handler := gin.New()
+	handler.Use(gin.Logger())
+	handler.Use(cors.Default())
 
 	dishRepo := dish.NewDishRepo(db)
 	dishService := dish.NewDishService(dishRepo)
@@ -32,12 +53,12 @@ func Router(db *gorm.DB, router *gin.Engine) *gin.Engine {
 	authService := auth.NewAuthService(authRepo)
 	authHandler := auth.NewAuthHandler(authService)
 
-	a := router.Group("/auth")
+	a := handler.Group("/auth")
 	{
 		a.POST("/sign-in", authHandler.SignIn)
 		a.POST("/sign-up", authHandler.SignUp)
 	}
-	api := router.Group("/api", authHandler.AuthMiddleware)
+	api := handler.Group("/api", authHandler.AuthMiddleware)
 	{
 		d := api.Group("/dish")
 		{
@@ -64,5 +85,5 @@ func Router(db *gorm.DB, router *gin.Engine) *gin.Engine {
 			l.DELETE("/:id", listHandler.DeleteList)
 		}
 	}
-	return router
+	return handler
 }
