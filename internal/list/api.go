@@ -2,7 +2,7 @@ package list
 
 import (
 	"github.com/gin-gonic/gin"
-	"my_goods/internal/entity"
+	"my_goods/internal/entities"
 	"my_goods/pkg/logger"
 	"net/http"
 	"strconv"
@@ -32,7 +32,7 @@ func (h *Handler) GetAllLists(c *gin.Context) {
 }
 
 func (h *Handler) CreateList(c *gin.Context) {
-	list := entity.List{}
+	list := entities.List{}
 	err := c.Bind(&list)
 	lists := h.services.createList(&list)
 	if err != nil {
@@ -43,7 +43,7 @@ func (h *Handler) CreateList(c *gin.Context) {
 }
 
 func (h *Handler) UpdateList(c *gin.Context) {
-	list := entity.List{}
+	list := entities.List{}
 	err := c.Bind(&list)
 	lists := h.services.updateList(&list)
 	if err != nil {

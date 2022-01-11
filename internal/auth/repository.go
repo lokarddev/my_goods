@@ -3,7 +3,7 @@ package auth
 import (
 	"errors"
 	"gorm.io/gorm"
-	"my_goods/internal/entity"
+	"my_goods/internal/entities"
 )
 
 type RepoAuth interface {
@@ -20,7 +20,7 @@ func NewAuthRepo(db *gorm.DB) *Repository {
 }
 
 func (r *Repository) GetUser(login, pass string) (int, error) {
-	var user entity.User
+	var user entities.User
 	r.db.Where("login = ? AND pass = ?", login, pass).Find(&user)
 	if user.ID == 0 {
 		return 0, errors.New("no user with this credentials")
@@ -29,7 +29,7 @@ func (r *Repository) GetUser(login, pass string) (int, error) {
 }
 
 func (r *Repository) CreateUser(input Auth) (int, error) {
-	user := &entity.User{Login: input.Login, Pass: input.Pass}
+	user := &entities.User{Login: input.Login, Pass: input.Pass}
 	r.db.Create(&user)
 	if user.ID == 0 {
 		return 0, errors.New("something goes wrong")

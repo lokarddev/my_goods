@@ -2,7 +2,7 @@ package dish
 
 import (
 	"github.com/gin-gonic/gin"
-	"my_goods/internal/entity"
+	"my_goods/internal/entities"
 	"my_goods/pkg/logger"
 	"net/http"
 	"strconv"
@@ -37,7 +37,7 @@ func (h *Handler) GetAllDishes(c *gin.Context) {
 }
 
 func (h *Handler) CreateDish(c *gin.Context) {
-	var dish entity.Dish
+	var dish entities.Dish
 	err := c.BindJSON(&dish)
 	dishes := h.services.CreateDish(&dish)
 	if err != nil {
@@ -49,7 +49,7 @@ func (h *Handler) CreateDish(c *gin.Context) {
 }
 
 func (h *Handler) UpdateDish(c *gin.Context) {
-	dish := entity.Dish{}
+	dish := entities.Dish{}
 	err := c.BindJSON(&dish)
 	dishes := h.services.UpdateDish(&dish)
 	if err != nil {

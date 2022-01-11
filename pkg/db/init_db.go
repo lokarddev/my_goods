@@ -5,7 +5,7 @@ import (
 	"github.com/sirupsen/logrus"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
-	"my_goods/internal/entity"
+	"my_goods/internal/entities"
 	"my_goods/pkg/environ"
 )
 
@@ -35,7 +35,7 @@ func DB(cfg *DbConfig) (*gorm.DB, error) {
 	if err != nil {
 		logrus.Error(err)
 	}
-	err = db.AutoMigrate(&entity.User{}, &entity.Token{}, &entity.Goods{}, &entity.Dish{}, &entity.List{})
+	err = db.AutoMigrate(&entities.User{}, &entities.Token{}, &entities.Goods{}, &entities.Dish{}, &entities.List{})
 	if err != nil {
 		logrus.Error(err)
 	}

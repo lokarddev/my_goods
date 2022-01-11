@@ -2,7 +2,7 @@ package list
 
 import (
 	"gorm.io/gorm"
-	"my_goods/internal/entity"
+	"my_goods/internal/entities"
 )
 
 // Repository base db struct
@@ -15,28 +15,28 @@ func NewListRepo(db *gorm.DB) *Repository {
 	return &Repository{db: db}
 }
 
-func (r *Repository) getList(id int) *entity.List {
-	list := entity.List{}
+func (r *Repository) getList(id int) *entities.List {
+	list := entities.List{}
 	r.db.First(&list, id)
 	return &list
 }
 
-func (r *Repository) getAllLists() *[]entity.List {
-	var lists []entity.List
+func (r *Repository) getAllLists() *[]entities.List {
+	var lists []entities.List
 	r.db.Find(&lists)
 	return &lists
 }
 
-func (r *Repository) createList(list *entity.List) *entity.List {
+func (r *Repository) createList(list *entities.List) *entities.List {
 	r.db.Create(&list)
 	return list
 }
 
-func (r *Repository) updateList(list *entity.List) *entity.List {
+func (r *Repository) updateList(list *entities.List) *entities.List {
 	r.db.Model(&list).Updates(&list)
 	return list
 }
 
 func (r *Repository) deleteList(id int) {
-	r.db.Delete(&entity.List{}, id)
+	r.db.Delete(&entities.List{}, id)
 }

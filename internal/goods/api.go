@@ -2,7 +2,7 @@ package goods
 
 import (
 	"github.com/gin-gonic/gin"
-	"my_goods/internal/entity"
+	"my_goods/internal/entities"
 	"my_goods/pkg/logger"
 	"net/http"
 	"strconv"
@@ -32,7 +32,7 @@ func (h *Handler) GetAllGoods(c *gin.Context) {
 }
 
 func (h *Handler) CreateGoods(c *gin.Context) {
-	good := entity.Goods{}
+	good := entities.Goods{}
 	err := c.Bind(&good)
 	goods := h.services.createGoods(&good)
 	if err != nil {
@@ -43,7 +43,7 @@ func (h *Handler) CreateGoods(c *gin.Context) {
 }
 
 func (h *Handler) UpdateGoods(c *gin.Context) {
-	good := entity.Goods{}
+	good := entities.Goods{}
 	err := c.Bind(&good)
 	goods := h.services.updateGoods(&good)
 	if err != nil {

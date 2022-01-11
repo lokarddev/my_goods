@@ -5,7 +5,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
 	"gorm.io/gorm"
-	"my_goods/internal/entity"
+	"my_goods/internal/entities"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -19,31 +19,31 @@ var (
 
 type mockService struct{}
 
-func (s *mockService) GetDish(id int) *entity.Dish {
-	dish := entity.Dish{Model: gorm.Model{ID: 1}}
+func (s *mockService) GetDish(id int) *entities.Dish {
+	dish := entities.Dish{Model: gorm.Model{ID: 1}}
 	if id == int(dish.Model.ID) {
 		return &dish
 	}
-	return &entity.Dish{}
+	return &entities.Dish{}
 }
 
-func (s *mockService) GetAllDishes() *[]entity.Dish {
-	var dishes []entity.Dish
+func (s *mockService) GetAllDishes() *[]entities.Dish {
+	var dishes []entities.Dish
 	return &dishes
 }
 
-func (s *mockService) CreateDish(dish *entity.Dish) *entity.Dish {
-	result := entity.Dish{Title: dish.Title, Description: dish.Description, Model: gorm.Model{ID: 12}}
+func (s *mockService) CreateDish(dish *entities.Dish) *entities.Dish {
+	result := entities.Dish{Title: dish.Title, Description: dish.Description, Model: gorm.Model{ID: 12}}
 	return &result
 }
 
-func (s *mockService) UpdateDish(dish *entity.Dish) *entity.Dish {
-	result := entity.Dish{}
+func (s *mockService) UpdateDish(dish *entities.Dish) *entities.Dish {
+	result := entities.Dish{}
 	return &result
 }
 
 func (s *mockService) DeleteDish(id int) {
-	_ = entity.Dish{}
+	_ = entities.Dish{}
 }
 
 func TestHandler_GetAllDishes(t *testing.T) {
@@ -63,7 +63,7 @@ func TestHandler_GetDish_ValidInput(t *testing.T) {
 	c.Request, _ = http.NewRequest(http.MethodGet, "", nil)
 	c.Params = []gin.Param{{Key: "id", Value: "1"}}
 	testHandler.GetDish(c)
-	var result entity.Dish
+	var result entities.Dish
 	err := json.Unmarshal(response.Body.Bytes(), &result)
 	assert.NotNil(t, response.Body)
 	assert.Equal(t, http.StatusOK, response.Code)
@@ -111,7 +111,7 @@ func TestHandler_CreateDish(t *testing.T) {
 	c.Request, _ = http.NewRequest(http.MethodPost, "", strings.NewReader(data))
 	testHandler.CreateDish(c)
 	assert.NotNil(t, response.Body)
-	var result entity.Dish
+	var result entities.Dish
 	err := json.Unmarshal(response.Body.Bytes(), &result)
 	assert.NotNil(t, response.Code)
 	assert.Nil(t, err)

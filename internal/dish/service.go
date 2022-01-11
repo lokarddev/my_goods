@@ -1,12 +1,12 @@
 package dish
 
-import "my_goods/internal/entity"
+import "my_goods/internal/entities"
 
 type ServeDish interface {
-	GetAllDishes() *[]entity.Dish
-	GetDish(id int) *entity.Dish
-	CreateDish(dish *entity.Dish) *entity.Dish
-	UpdateDish(dish *entity.Dish) *entity.Dish
+	GetAllDishes() *[]entities.Dish
+	GetDish(id int) *entities.Dish
+	CreateDish(dish *entities.Dish) *entities.Dish
+	UpdateDish(dish *entities.Dish) *entities.Dish
 	DeleteDish(id int)
 }
 
@@ -20,19 +20,19 @@ func NewDishService(repo RepoDish) *Service {
 	return &Service{repo: repo}
 }
 
-func (s *Service) GetDish(id int) *entity.Dish {
+func (s *Service) GetDish(id int) *entities.Dish {
 	return s.repo.GetDish(id)
 }
 
-func (s *Service) GetAllDishes() *[]entity.Dish {
+func (s *Service) GetAllDishes() *[]entities.Dish {
 	return s.repo.GetAllDishes()
 }
 
-func (s *Service) CreateDish(dish *entity.Dish) *entity.Dish {
+func (s *Service) CreateDish(dish *entities.Dish) *entities.Dish {
 	return s.repo.CreateDish(dish)
 }
 
-func (s *Service) UpdateDish(dish *entity.Dish) *entity.Dish {
+func (s *Service) UpdateDish(dish *entities.Dish) *entities.Dish {
 	return s.repo.UpdateDish(dish)
 }
 

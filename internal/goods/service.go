@@ -1,6 +1,6 @@
 package goods
 
-import "my_goods/internal/entity"
+import "my_goods/internal/entities"
 
 // Service init structure for goods service
 type Service struct {
@@ -12,19 +12,19 @@ func NewGoodsService(repo Repository) *Service {
 	return &Service{repo: repo}
 }
 
-func (s *Service) getGoods(id int) *entity.Goods {
+func (s *Service) getGoods(id int) *entities.Goods {
 	return s.repo.getGoods(id)
 }
 
-func (s *Service) getAllGoods() *[]entity.Goods {
+func (s *Service) getAllGoods() *[]entities.Goods {
 	return s.repo.getAllGoods()
 }
 
-func (s *Service) createGoods(good *entity.Goods) *entity.Goods {
+func (s *Service) createGoods(good *entities.Goods) *entities.Goods {
 	return s.repo.createGoods(good)
 }
 
-func (s *Service) updateGoods(good *entity.Goods) *entity.Goods {
+func (s *Service) updateGoods(good *entities.Goods) *entities.Goods {
 	return s.repo.updateGoods(good)
 }
 
