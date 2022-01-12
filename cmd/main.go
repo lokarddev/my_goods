@@ -1,21 +1,17 @@
 package main
 
 import (
-	"github.com/sirupsen/logrus"
 	"log"
 	"my_goods/internal/delivery/web"
 	"my_goods/internal/repository"
 	"my_goods/internal/service"
 	"my_goods/pkg/db"
-	"my_goods/pkg/environ"
+	"my_goods/pkg/env"
 )
 
 func main() {
-	environ.Env()
-	database, err := db.DB(db.NewDatabaseConf())
-	if err != nil {
-		logrus.Fatalf("Error while running server")
-	}
+	err := env.InitEnvVariables()
+	database, err := db.NewDatabasePostgres()
 
 	repo := repository.NewRepository(database)
 	services := service.NewService(repo)

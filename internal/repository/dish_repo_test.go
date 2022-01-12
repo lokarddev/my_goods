@@ -1,65 +1,48 @@
 package repository
 
 import (
-	"database/sql"
-	"github.com/DATA-DOG/go-sqlmock"
+	"context"
+	"github.com/driftprogramming/pgxpoolmock"
+	"github.com/golang/mock/gomock"
+	"github.com/jackc/pgtype"
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
-	"github.com/stretchr/testify/suite"
-	"gorm.io/driver/postgres"
-	"gorm.io/gorm"
-	"my_goods/internal/entities"
-	"regexp"
 	"testing"
 )
 
-func TestDishSuite(t *testing.T) {
-	suite.Run(t, new(testDishSuite))
+func TestGetDish(t *testing.T) {
+	t.Parallel()
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+	mockPool := pgxpoolmock.NewMockPgxPool(ctrl)
+	id := pgtype.Int4{Int: int32(1), Status: pgtype.Present}
+	title := pgtype.Varchar{String: "test_title", Status: pgtype.Present}
+	description := pgtype.Varchar{String: "test_description", Status: pgtype.Present}
+
+	columns := []string{"id", "title", "description"}
+	pgxRows := pgxpoolmock.NewRows(columns).AddRow(id, title, description).ToPgxRows()
+	mockPool.EXPECT().Query(context.Background(), "SELECT id, title, description FROM dishes WHERE id=$1", 1).Return(pgxRows, nil)
+	db := NewDishRepository(mockPool)
+
+	result, err := db.GetDish(1)
+
+	assert.Equal(t, nil, err)
+	assert.NotNil(t, result)
+	assert.Equal(t, title, result.Title)
+	assert.Equal(t, description, result.Description)
 }
 
-type testDishSuite struct {
-	suite.Suite
-	db   *gorm.DB
-	mock sqlmock.Sqlmock
-	repo DishRepo
-}
-
-func (ts *testDishSuite) SetupMockDB() {
-	var (
-		db  *sql.DB
-		err error
-	)
-	db, ts.mock, err = sqlmock.New()
-	ts.db, err = gorm.Open(postgres.New(postgres.Config{
-		Conn: db,
-	}), &gorm.Config{})
-	require.NoError(ts.T(), err)
-	ts.repo = NewDishRepository(ts.db)
-}
-
-func (ts *testDishSuite) TestGetDish() {
-	ts.SetupMockDB()
-	ts.T().Run("Valid", func(t *testing.T) {
-		ts.mock.ExpectQuery(regexp.QuoteMeta(
-			"select * from "))
-
-		result := ts.repo.GetDish(1)
-		assert.IsType(ts.T(), entities.Dish{}, result)
-	})
-}
-
-func (ts *testDishSuite) TestGetAllDishes() {
+func TestGetAllDishes(t *testing.T) {
 
 }
 
-func (ts *testDishSuite) TestCreateDish() {
+func TestCreateDish(t *testing.T) {
 
 }
 
-func (ts *testDishSuite) TestUpdateDish() {
+func TestUpdateDish(t *testing.T) {
 
 }
 
-func (ts *testDishSuite) TestDeleteDish() {
+func TestDeleteDish(t *testing.T) {
 
 }

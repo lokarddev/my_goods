@@ -1,7 +1,7 @@
 package repository
 
 import (
-	"gorm.io/gorm"
+	"context"
 	"my_goods/internal/entities"
 )
 
@@ -14,35 +14,36 @@ type ListRepo interface {
 }
 
 type ListRepository struct {
-	db *gorm.DB
+	db  PgxPoolInterface
+	ctx context.Context
 }
 
-func NewListRepository(db *gorm.DB) *ListRepository {
-	return &ListRepository{db: db}
+func NewListRepository(db PgxPoolInterface) *ListRepository {
+	return &ListRepository{db: db, ctx: context.Background()}
 }
 
 func (r *ListRepository) GetList(id int) *entities.List {
 	list := entities.List{}
-	r.db.First(&list, id)
+
 	return &list
 }
 
 func (r *ListRepository) GetAllLists() *[]entities.List {
 	var lists []entities.List
-	r.db.Find(&lists)
+
 	return &lists
 }
 
 func (r *ListRepository) CreateList(list *entities.List) *entities.List {
-	r.db.Create(&list)
+
 	return list
 }
 
 func (r *ListRepository) UpdateList(list *entities.List) *entities.List {
-	r.db.Model(&list).Updates(&list)
+
 	return list
 }
 
 func (r *ListRepository) DeleteList(id int) {
-	r.db.Delete(&entities.List{}, id)
+
 }

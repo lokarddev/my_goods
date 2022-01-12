@@ -1,43 +1,44 @@
 package db
 
 import (
+	"context"
 	"fmt"
-	"github.com/sirupsen/logrus"
-	"gorm.io/driver/postgres"
-	"gorm.io/gorm"
-	"my_goods/internal/entities"
-	"my_goods/pkg/environ"
+	"github.com/jackc/pgx/v4/pgxpool"
+	"log"
+	"my_goods/pkg/env"
 )
 
-type DbConfig struct {
+type DatabaseConfig struct {
 	Host     string
 	Port     string
 	Username string
 	Password string
-	DbName   string
-	SslMode  string
+	DBName   string
+	DbSchema string
+	SSLMode  string
 }
 
-func NewDatabaseConf() *DbConfig {
-	return &DbConfig{
-		Host:     environ.DbHost,
-		Port:     environ.DbPort,
-		DbName:   environ.DbName,
-		Username: environ.DbUser,
-		Password: environ.DbPass,
-		SslMode:  environ.SslMode,
+func NewDatabasePostgres() (*pgxpool.Pool, error) {
+	cfg := DatabaseConfig{
+		Host:     env.DbHost,
+		Port:     env.DbPort,
+		Username: env.DbUser,
+		Password: env.DbPass,
+		DBName:   env.DbName,
+		DbSchema: env.DbSchema,
+		SSLMode:  env.DbSsl,
 	}
-}
-
-func DB(cfg *DbConfig) (*gorm.DB, error) {
-	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=%s", cfg.Host, cfg.Username, cfg.Password, cfg.DbName, cfg.Port, cfg.SslMode)
-	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	dsnDB := fmt.Sprintf("postgres://%s:%s@%s:%s/%s?search_path=%s&sslmode=%s",
+		cfg.Username, cfg.Password, cfg.Host, cfg.Port, cfg.DBName, cfg.DbSchema, cfg.SSLMode)
+	e, err := pgxpool.ParseConfig(dsnDB)
+	e.MaxConns = int32(20)
 	if err != nil {
-		logrus.Error(err)
+		log.Fatalf("ERROR INITIALIZING DB[%s]: %s", cfg.DBName, err.Error())
 	}
-	err = db.AutoMigrate(&entities.User{}, &entities.Token{}, &entities.Goods{}, &entities.Dish{}, &entities.List{})
+	db, err := pgxpool.ConnectConfig(context.Background(), e)
 	if err != nil {
-		logrus.Error(err)
+		log.Fatalf("ERROR INITIALIZING DB[%s]: %s", cfg.DBName, err.Error())
 	}
+	log.Printf("SUCCESSFUL CONNECTION TO DB[%s]\n", cfg.DBName)
 	return db, err
 }
