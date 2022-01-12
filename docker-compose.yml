@@ -16,9 +16,9 @@ services:
   app:
     build: .
     expose:
-      - 8001
+      - 8000
     ports:
-      - 8001:8001
+      - 8000:8000
     depends_on:
       - postgres
     command: sh -c "/wait && /app/cmd/goods"
