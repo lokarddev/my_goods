@@ -6,10 +6,6 @@ import (
 	"net/http"
 )
 
-const (
-	someCommand = "test command"
-)
-
 type Controller struct {
 	services *service.Service
 }
@@ -24,14 +20,4 @@ func NewController(services *service.Service) *Controller {
 
 func (c *Controller) healthCheck(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{})
-}
-
-type DispatcherInterface interface {
-}
-
-type Dispatcher struct {
-}
-
-func (d *Dispatcher) MatchCommands() {
-
 }

@@ -5,18 +5,18 @@ import (
 	"my_goods/internal/service"
 )
 
-type BaseHandler struct {
+type BaseHTTPHandler struct {
 	services *service.Service
 }
 
-func (h *BaseHandler) InitHTTPHandler() *gin.Engine {
+func (h *BaseHTTPHandler) InitHTTPHandler() *gin.Engine {
 	handler := gin.New()
 	handler.Use(gin.Logger(), gin.Recovery())
 	h.initAPI(handler)
 	return handler
 }
 
-func (h *BaseHandler) initAPI(router *gin.Engine) {
+func (h *BaseHTTPHandler) initAPI(router *gin.Engine) {
 	controller := NewController(h.services)
 	api := router.Group("/api")
 	{
@@ -24,6 +24,6 @@ func (h *BaseHandler) initAPI(router *gin.Engine) {
 	}
 }
 
-func NewAPIHandler(services *service.Service) *BaseHandler {
-	return &BaseHandler{services: services}
+func NewAPIHandler(services *service.Service) *BaseHTTPHandler {
+	return &BaseHTTPHandler{services: services}
 }
