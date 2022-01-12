@@ -12,6 +12,7 @@ type BaseHTTPHandler struct {
 func (h *BaseHTTPHandler) InitHTTPHandler() *gin.Engine {
 	handler := gin.New()
 	handler.Use(gin.Logger(), gin.Recovery())
+	handler.LoadHTMLGlob("templates/*.html")
 	h.initAPI(handler)
 	return handler
 }
