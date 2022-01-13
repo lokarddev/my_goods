@@ -46,8 +46,9 @@ func NewDatabasePostgres() (*pgxpool.Pool, error) {
 	}
 	log.Printf("SUCCESSFUL CONNECTION TO DB[%s]\n", cfg.DBName)
 
-	err = migrationsUp()
-
+	if env.Automigrations {
+		err = migrationsUp()
+	}
 	return db, err
 }
 

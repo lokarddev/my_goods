@@ -8,7 +8,8 @@ import (
 )
 
 var (
-	Production, _ = strconv.ParseBool(os.Getenv("PRODUCTION"))
+	Production, _  = strconv.ParseBool(os.Getenv("PRODUCTION"))
+	Automigrations bool
 
 	DbHost   string
 	DbPort   string
@@ -38,5 +39,7 @@ func InitEnvVariables() error {
 	DbName = os.Getenv("DB_NAME")
 	DbSsl = os.Getenv("SSL_MODE")
 	DbSchema = os.Getenv("DB_SCHEMA")
+
+	Automigrations, _ = strconv.ParseBool(os.Getenv("AUTOMIGRATIONS"))
 	return err
 }
