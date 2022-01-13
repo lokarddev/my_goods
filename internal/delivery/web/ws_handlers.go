@@ -90,7 +90,8 @@ type GetDishHandler struct {
 }
 
 func (h *GetDishHandler) ProcessTask(payload []byte) {
-	h.services.Dish.GetDish(1)
+	dish, err := h.services.Dish.GetDish(1)
+	fmt.Println(dish, err)
 }
 
 type GetAllDishesHandler struct {

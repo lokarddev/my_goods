@@ -10,9 +10,7 @@ import (
 )
 
 func TestGetDish(t *testing.T) {
-	t.Parallel()
 	ctrl := gomock.NewController(t)
-	defer ctrl.Finish()
 	mockPool := pgxpoolmock.NewMockPgxPool(ctrl)
 	id := pgtype.Int4{Int: int32(1), Status: pgtype.Present}
 	title := pgtype.Varchar{String: "test_title", Status: pgtype.Present}

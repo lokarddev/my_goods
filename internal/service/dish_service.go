@@ -7,7 +7,7 @@ import (
 
 type DishServiceInterface interface {
 	GetAllDishes() *[]entities.Dish
-	GetDish(id int) *entities.Dish
+	GetDish(id int) (*entities.Dish, error)
 	CreateDish(dish *entities.Dish) *entities.Dish
 	UpdateDish(dish *entities.Dish) *entities.Dish
 	DeleteDish(id int)
@@ -21,7 +21,7 @@ func NewDishService(repo repository.DishRepo) *DishService {
 	return &DishService{repo: repo}
 }
 
-func (s *DishService) GetDish(id int) *entities.Dish {
+func (s *DishService) GetDish(id int) (*entities.Dish, error) {
 	return s.repo.GetDish(id)
 }
 
