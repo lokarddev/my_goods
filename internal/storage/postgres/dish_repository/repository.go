@@ -28,22 +28,19 @@ func (r *DishRepository) GetDish(id int) (*entities.Dish, error) {
 	return &dish, err
 }
 
-func (r *DishRepository) GetAllDishes() *[]entities.Dish {
+func (r *DishRepository) GetAllDishes() (*[]entities.Dish, error) {
 	var dish []entities.Dish
-
-	return &dish
+	return &dish, nil
 }
 
-func (r *DishRepository) CreateDish(dish *entities.Dish) *entities.Dish {
-
-	return dish
+func (r *DishRepository) CreateDish(dish *entities.Dish) (*entities.Dish, error) {
+	return dish, nil
 }
 
-func (r *DishRepository) UpdateDish(dish *entities.Dish) *entities.Dish {
-
-	return dish
+func (r *DishRepository) UpdateDish(dish *entities.Dish, id int) (*entities.Dish, error) {
+	return dish, nil
 }
 
-func (r *DishRepository) DeleteDish(id int) {
-
+func (r *DishRepository) DeleteDish(id int) error {
+	return nil
 }

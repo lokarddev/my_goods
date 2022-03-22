@@ -3,28 +3,31 @@ package entities
 import "github.com/jackc/pgtype"
 
 type Dish struct {
-	ID          pgtype.Int4    `json:"id" database:"id"`
-	Title       pgtype.Varchar `json:"title" database:"title"`
-	Description pgtype.Varchar `json:"description" database:"description"`
+	Id pgtype.Int4 `json:"id" db:"id"`
+	BaseModel
 }
 
 type Goods struct {
-	Title       string
-	Description string
+	Id pgtype.Int4 `json:"id" db:"id"`
+	BaseModel
 }
 
 type List struct {
-	Dishes      []Dish
-	Title       string
-	Description string
+	Dishes []Dish
+	BaseModel
 }
 
-type User struct {
-	Login string `json:"login"`
-	Pass  string `json:"pass"`
+type DishToGoods struct {
+	DishId  pgtype.Int4
+	GoodsId pgtype.Int4
 }
 
-type Token struct {
-	User   User `json:"user"`
-	UserID int  `json:"user_id"`
+type ListsToDish struct {
+	DishId  pgtype.Int4
+	ListsId pgtype.Int4
+}
+
+type BaseModel struct {
+	Title       pgtype.Varchar `json:"title" db:"title"`
+	Description pgtype.Varchar `json:"description" db:"description"`
 }

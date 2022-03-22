@@ -15,28 +15,24 @@ func NewListRepository(db postgres.PgxPoolInterface) *ListRepository {
 	return &ListRepository{db: db, ctx: context.Background()}
 }
 
-func (r *ListRepository) GetList(id int) *entities.List {
+func (r *ListRepository) GetList(id int) (*entities.List, error) {
 	list := entities.List{}
-
-	return &list
+	return &list, nil
 }
 
-func (r *ListRepository) GetAllLists() *[]entities.List {
+func (r *ListRepository) GetAllLists() (*[]entities.List, error) {
 	var lists []entities.List
-
-	return &lists
+	return &lists, nil
 }
 
-func (r *ListRepository) CreateList(list *entities.List) *entities.List {
-
-	return list
+func (r *ListRepository) CreateList(list *entities.List) (*entities.List, error) {
+	return list, nil
 }
 
-func (r *ListRepository) UpdateList(list *entities.List) *entities.List {
-
-	return list
+func (r *ListRepository) UpdateList(list *entities.List, id int) (*entities.List, error) {
+	return list, nil
 }
 
-func (r *ListRepository) DeleteList(id int) {
-
+func (r *ListRepository) DeleteList(id int) error {
+	return nil
 }

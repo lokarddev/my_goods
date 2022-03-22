@@ -15,28 +15,24 @@ func NewGoodsRepository(db postgres.PgxPoolInterface) *GoodsRepository {
 	return &GoodsRepository{db: db, ctx: context.Background()}
 }
 
-func (r *GoodsRepository) GetGoods(id int) *entities.Goods {
+func (r *GoodsRepository) GetGoods(id int) (*entities.Goods, error) {
 	good := entities.Goods{}
-
-	return &good
+	return &good, nil
 }
 
-func (r *GoodsRepository) GetAllGoods() *[]entities.Goods {
+func (r *GoodsRepository) GetAllGoods() (*[]entities.Goods, error) {
 	var goods []entities.Goods
-
-	return &goods
+	return &goods, nil
 }
 
-func (r *GoodsRepository) CreateGoods(good *entities.Goods) *entities.Goods {
-
-	return good
+func (r *GoodsRepository) CreateGoods(good *entities.Goods) (*entities.Goods, error) {
+	return good, nil
 }
 
-func (r *GoodsRepository) UpdateGoods(good *entities.Goods) *entities.Goods {
-
-	return good
+func (r *GoodsRepository) UpdateGoods(good *entities.Goods, id int) (*entities.Goods, error) {
+	return good, nil
 }
 
-func (r *GoodsRepository) DeleteGoods(id int) {
-
+func (r *GoodsRepository) DeleteGoods(id int) error {
+	return nil
 }
