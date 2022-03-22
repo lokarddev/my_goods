@@ -1,35 +1,33 @@
 package entities
 
-import "gorm.io/gorm"
+import "github.com/jackc/pgtype"
 
 type Dish struct {
-	gorm.Model
-	Goods       []Goods `gorm:"many2many:dish_goods;"`
-	Title       string
-	Description string
+	Id pgtype.Int4 `json:"id" db:"id"`
+	BaseModel
 }
 
 type Goods struct {
-	gorm.Model
-	Title       string
-	Description string
+	Id pgtype.Int4 `json:"id" db:"id"`
+	BaseModel
 }
 
 type List struct {
-	gorm.Model
-	Dishes      []Dish `gorm:"many2many:list_dishes;"`
-	Title       string
-	Description string
+	Dishes []Dish
+	BaseModel
 }
 
-type User struct {
-	gorm.Model
-	Login string `json:"login" gorm:"unique"`
-	Pass  string `json:"pass"`
+type DishToGoods struct {
+	DishId  pgtype.Int4
+	GoodsId pgtype.Int4
 }
 
-type Token struct {
-	gorm.Model
-	User   User `json:"user" gorm:"foreignKey:UserID"`
-	UserID int  `json:"user_id"`
+type ListsToDish struct {
+	DishId  pgtype.Int4
+	ListsId pgtype.Int4
+}
+
+type BaseModel struct {
+	Title       pgtype.Varchar `json:"title" db:"title"`
+	Description pgtype.Varchar `json:"description" db:"description"`
 }
