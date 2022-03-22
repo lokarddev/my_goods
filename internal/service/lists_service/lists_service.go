@@ -1,23 +1,15 @@
-package service
+package lists_service
 
 import (
 	"my_goods/internal/entities"
-	"my_goods/internal/repository"
+	"my_goods/internal/service"
 )
 
-type ListServiceInterface interface {
-	GetList(id int) *entities.List
-	GetAllLists() *[]entities.List
-	CreateList(list *entities.List) *entities.List
-	UpdateList(list *entities.List) *entities.List
-	DeleteList(id int)
-}
-
 type ListService struct {
-	repo repository.ListRepo
+	repo service.ListRepo
 }
 
-func NewListService(repo repository.ListRepo) *ListService {
+func NewListService(repo service.ListRepo) *ListService {
 	return &ListService{repo: repo}
 }
 

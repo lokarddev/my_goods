@@ -3,9 +3,9 @@ package entities
 import "github.com/jackc/pgtype"
 
 type Dish struct {
-	ID          pgtype.Int4    `json:"id" db:"id"`
-	Title       pgtype.Varchar `json:"title" db:"title"`
-	Description pgtype.Varchar `json:"description" db:"description"`
+	ID          pgtype.Int4    `json:"id" database:"id"`
+	Title       pgtype.Varchar `json:"title" database:"title"`
+	Description pgtype.Varchar `json:"description" database:"description"`
 }
 
 type Goods struct {

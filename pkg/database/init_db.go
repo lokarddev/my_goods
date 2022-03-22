@@ -1,4 +1,4 @@
-package db
+package database
 
 import (
 	"context"
@@ -33,21 +33,22 @@ func NewDatabasePostgres() (*pgxpool.Pool, error) {
 		DbSchema: env.DbSchema,
 		SSLMode:  env.DbSsl,
 	}
+
 	dsnDB := fmt.Sprintf("postgres://%s:%s@%s:%s/%s?search_path=%s&sslmode=%s",
 		cfg.Username, cfg.Password, cfg.Host, cfg.Port, cfg.DBName, cfg.DbSchema, cfg.SSLMode)
 	e, err := pgxpool.ParseConfig(dsnDB)
-	e.MaxConns = int32(20)
 	if err != nil {
-		log.Fatalf("ERROR INITIALIZING DB[%s]: %s", cfg.DBName, err.Error())
+		return nil, err
 	}
 	db, err := pgxpool.ConnectConfig(context.Background(), e)
 	if err != nil {
-		log.Fatalf("ERROR INITIALIZING DB[%s]: %s", cfg.DBName, err.Error())
+		return nil, err
 	}
 	log.Printf("SUCCESSFUL CONNECTION TO DB[%s]\n", cfg.DBName)
-
-	if env.Automigrations {
-		err = migrationsUp()
+	if env.AutoMigrate {
+		if err = migrationsUp(); err != nil {
+			log.Println(err.Error())
+		}
 	}
 	return db, err
 }
@@ -57,15 +58,18 @@ func migrationsUp() error {
 		env.DbUser, env.DbPass, env.DbHost, env.DbPort, env.DbName, env.DbSsl)
 	mDB, err := sql.Open("postgres", dsnMigrations)
 	driver, err := postgres.WithInstance(mDB, &postgres.Config{
-		MigrationsTable:       "my_goods_migrations",
+		MigrationsTable:       "schema_migrations",
 		MigrationsTableQuoted: false,
 		MultiStatementEnabled: false,
 		DatabaseName:          env.DbName,
-		SchemaName:            "",
+		SchemaName:            "public",
 		StatementTimeout:      0,
 		MultiStatementMaxSize: 0,
 	})
 	m, err := migrate.NewWithDatabaseInstance("file://migrations/", env.DbName, driver)
 	err = m.Up()
+
+	err = driver.Close()
+	err = mDB.Close()
 	return err
 }

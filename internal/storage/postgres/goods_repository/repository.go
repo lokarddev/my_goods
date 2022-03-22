@@ -1,24 +1,17 @@
-package repository
+package goods_repository
 
 import (
 	"context"
 	"my_goods/internal/entities"
+	"my_goods/internal/storage/postgres"
 )
 
-type GoodsRepo interface {
-	GetGoods(id int) *entities.Goods
-	GetAllGoods() *[]entities.Goods
-	CreateGoods(good *entities.Goods) *entities.Goods
-	UpdateGoods(good *entities.Goods) *entities.Goods
-	DeleteGoods(id int)
-}
-
 type GoodsRepository struct {
-	db  PgxPoolInterface
+	db  postgres.PgxPoolInterface
 	ctx context.Context
 }
 
-func NewGoodsRepository(db PgxPoolInterface) *GoodsRepository {
+func NewGoodsRepository(db postgres.PgxPoolInterface) *GoodsRepository {
 	return &GoodsRepository{db: db, ctx: context.Background()}
 }
 

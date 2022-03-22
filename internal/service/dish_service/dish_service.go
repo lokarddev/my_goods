@@ -1,23 +1,15 @@
-package service
+package dish_service
 
 import (
 	"my_goods/internal/entities"
-	"my_goods/internal/repository"
+	"my_goods/internal/service"
 )
 
-type DishServiceInterface interface {
-	GetAllDishes() *[]entities.Dish
-	GetDish(id int) (*entities.Dish, error)
-	CreateDish(dish *entities.Dish) *entities.Dish
-	UpdateDish(dish *entities.Dish) *entities.Dish
-	DeleteDish(id int)
-}
-
 type DishService struct {
-	repo repository.DishRepo
+	repo service.DishRepo
 }
 
-func NewDishService(repo repository.DishRepo) *DishService {
+func NewDishService(repo service.DishRepo) *DishService {
 	return &DishService{repo: repo}
 }
 

@@ -1,23 +1,15 @@
-package service
+package goods_service
 
 import (
 	"my_goods/internal/entities"
-	"my_goods/internal/repository"
+	"my_goods/internal/service"
 )
 
-type GoodsServiceInterface interface {
-	GetGoods(id int) *entities.Goods
-	GetAllGoods() *[]entities.Goods
-	CreateGoods(good *entities.Goods) *entities.Goods
-	UpdateGoods(good *entities.Goods) *entities.Goods
-	DeleteGoods(id int)
-}
-
 type GoodsService struct {
-	repo repository.GoodsRepo
+	repo service.GoodsRepo
 }
 
-func NewGoodsService(repo repository.GoodsRepo) *GoodsService {
+func NewGoodsService(repo service.GoodsRepo) *GoodsService {
 	return &GoodsService{repo: repo}
 }
 

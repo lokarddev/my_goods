@@ -1,27 +1,20 @@
-package repository
+package dish_repository
 
 import (
 	"context"
 	"fmt"
 	"github.com/georgysavva/scany/pgxscan"
 	"my_goods/internal/entities"
+	"my_goods/internal/storage/postgres"
 	"my_goods/pkg/logger"
 )
 
-type DishRepo interface {
-	GetAllDishes() *[]entities.Dish
-	GetDish(id int) (*entities.Dish, error)
-	CreateDish(dish *entities.Dish) *entities.Dish
-	UpdateDish(dish *entities.Dish) *entities.Dish
-	DeleteDish(id int)
-}
-
 type DishRepository struct {
-	db  PgxPoolInterface
+	db  postgres.PgxPoolInterface
 	ctx context.Context
 }
 
-func NewDishRepository(db PgxPoolInterface) *DishRepository {
+func NewDishRepository(db postgres.PgxPoolInterface) *DishRepository {
 	return &DishRepository{db: db, ctx: context.Background()}
 }
 

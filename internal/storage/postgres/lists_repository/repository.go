@@ -1,24 +1,17 @@
-package repository
+package lists_repository
 
 import (
 	"context"
 	"my_goods/internal/entities"
+	"my_goods/internal/storage/postgres"
 )
 
-type ListRepo interface {
-	GetList(id int) *entities.List
-	GetAllLists() *[]entities.List
-	CreateList(list *entities.List) *entities.List
-	UpdateList(list *entities.List) *entities.List
-	DeleteList(id int)
-}
-
 type ListRepository struct {
-	db  PgxPoolInterface
+	db  postgres.PgxPoolInterface
 	ctx context.Context
 }
 
-func NewListRepository(db PgxPoolInterface) *ListRepository {
+func NewListRepository(db postgres.PgxPoolInterface) *ListRepository {
 	return &ListRepository{db: db, ctx: context.Background()}
 }
 
