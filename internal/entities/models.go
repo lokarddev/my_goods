@@ -18,13 +18,13 @@ type List struct {
 }
 
 type DishToGoods struct {
-	DishId  pgtype.Int4
-	GoodsId pgtype.Int4
+	DishId  pgtype.Int4 `json:"dish_id" db:"dish_id"`
+	GoodsId pgtype.Int4 `json:"goods_id" db:"goods_id"`
 }
 
 type ListsToDish struct {
-	DishId  pgtype.Int4
-	ListsId pgtype.Int4
+	DishId  pgtype.Int4 `json:"dish_id" db:"dish_id"`
+	ListsId pgtype.Int4 `json:"lists_id" db:"lists_id"`
 }
 
 type BaseModel struct {

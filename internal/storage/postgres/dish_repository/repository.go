@@ -3,10 +3,14 @@ package dish_repository
 import (
 	"context"
 	"fmt"
-	"github.com/georgysavva/scany/pgxscan"
+	"github.com/jackc/pgx/v4"
 	"my_goods/internal/entities"
 	"my_goods/internal/storage/postgres"
 	"my_goods/pkg/logger"
+)
+
+const (
+	dishTable = "dishes"
 )
 
 type DishRepository struct {
@@ -20,8 +24,14 @@ func NewDishRepository(db postgres.PgxPoolInterface) *DishRepository {
 
 func (r *DishRepository) GetDish(id int) (*entities.Dish, error) {
 	var dish entities.Dish
-	query := fmt.Sprintf("SELECT id, title, description FROM %s WHERE id=$1", "dishes")
-	err := pgxscan.Get(r.ctx, r.db, &dish, query, id)
+	query := fmt.Sprintf("SELECT id, title, description FROM %s WHERE id=$1", dishTable)
+	rows, err := r.db.Query(r.ctx, query, id)
+	defer rows.Close()
+	for rows.Next() {
+		if err = rows.Scan(&dish); err != nil {
+			logger.Error(err)
+		}
+	}
 	if err != nil {
 		logger.Error(err)
 	}
@@ -29,18 +39,67 @@ func (r *DishRepository) GetDish(id int) (*entities.Dish, error) {
 }
 
 func (r *DishRepository) GetAllDishes() (*[]entities.Dish, error) {
-	var dish []entities.Dish
-	return &dish, nil
+	var dishes []entities.Dish
+	query := fmt.Sprintf("SELECT * FROM %s", dishTable)
+	rows, err := r.db.Query(r.ctx, query)
+	defer rows.Close()
+	for rows.Next() {
+		var dish entities.Dish
+		if err = rows.Scan(&dish); err != nil {
+			logger.Error(err)
+		}
+		dishes = append(dishes, dish)
+	}
+	if err != nil {
+		logger.Error(err)
+	}
+	return &dishes, err
 }
 
 func (r *DishRepository) CreateDish(dish *entities.Dish) (*entities.Dish, error) {
-	return dish, nil
+	query := fmt.Sprintf("INSERT INTO %s (title, description) VALUES ($1, $2) RETURNING *", dishTable)
+	err := r.db.BeginTxFunc(r.ctx, pgx.TxOptions{}, func(tx pgx.Tx) error {
+		rows, err := r.db.Query(r.ctx, query, dish.Title, dish.Description)
+		defer rows.Close()
+		for rows.Next() {
+			if err = rows.Scan(dish); err != nil {
+				return err
+			}
+		}
+		return err
+	})
+	if err != nil {
+		logger.Error(err)
+	}
+	return dish, err
 }
 
 func (r *DishRepository) UpdateDish(dish *entities.Dish, id int) (*entities.Dish, error) {
-	return dish, nil
+	query := fmt.Sprintf("UPDATE %s SET title=$1, description=$2 WHERE id=$3 RETURNING *", dishTable)
+	err := r.db.BeginTxFunc(r.ctx, pgx.TxOptions{}, func(tx pgx.Tx) error {
+		rows, err := r.db.Query(r.ctx, query, dish.Title, dish.Description, id)
+		defer rows.Close()
+		for rows.Next() {
+			if err = rows.Scan(dish); err != nil {
+				return err
+			}
+		}
+		return err
+	})
+	if err != nil {
+		logger.Error(err)
+	}
+	return dish, err
 }
 
 func (r *DishRepository) DeleteDish(id int) error {
-	return nil
+	query := fmt.Sprintf("DELETE FROM %s WHERE id=$1", dishTable)
+	err := r.db.BeginTxFunc(r.ctx, pgx.TxOptions{}, func(tx pgx.Tx) error {
+		_, err := r.db.Exec(r.ctx, query, id)
+		return err
+	})
+	if err != nil {
+		logger.Error(err)
+	}
+	return err
 }
