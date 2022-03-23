@@ -2,8 +2,11 @@ package lists_repository
 
 import (
 	"context"
+	"fmt"
+	"github.com/jackc/pgx/v4"
 	"my_goods/internal/entities"
 	"my_goods/internal/storage/postgres"
+	"my_goods/pkg/logger"
 )
 
 type ListRepository struct {
@@ -11,28 +14,92 @@ type ListRepository struct {
 	ctx context.Context
 }
 
+const (
+	listsTable = "lists"
+)
+
 func NewListRepository(db postgres.PgxPoolInterface) *ListRepository {
 	return &ListRepository{db: db, ctx: context.Background()}
 }
 
 func (r *ListRepository) GetList(id int) (*entities.List, error) {
-	list := entities.List{}
-	return &list, nil
+	var list entities.List
+	query := fmt.Sprintf("SELECT id, title, description FROM %s WHERE id=$1", listsTable)
+	rows, err := r.db.Query(r.ctx, query, id)
+	defer rows.Close()
+	for rows.Next() {
+		if err = rows.Scan(&list); err != nil {
+			logger.Error(err)
+		}
+	}
+	if err != nil {
+		logger.Error(err)
+	}
+	return &list, err
 }
 
 func (r *ListRepository) GetAllLists() (*[]entities.List, error) {
 	var lists []entities.List
-	return &lists, nil
+	query := fmt.Sprintf("SELECT * FROM %s", listsTable)
+	rows, err := r.db.Query(r.ctx, query)
+	defer rows.Close()
+	for rows.Next() {
+		var good entities.List
+		if err = rows.Scan(&good); err != nil {
+			logger.Error(err)
+		}
+		lists = append(lists, good)
+	}
+	if err != nil {
+		logger.Error(err)
+	}
+	return &lists, err
 }
 
 func (r *ListRepository) CreateList(list *entities.List) (*entities.List, error) {
-	return list, nil
+	query := fmt.Sprintf("INSERT INTO %s (title, description) VALUES ($1, $2) RETURNING *", listsTable)
+	err := r.db.BeginTxFunc(r.ctx, pgx.TxOptions{}, func(tx pgx.Tx) error {
+		rows, err := r.db.Query(r.ctx, query, list.Title, list.Description)
+		defer rows.Close()
+		for rows.Next() {
+			if err = rows.Scan(list); err != nil {
+				return err
+			}
+		}
+		return err
+	})
+	if err != nil {
+		logger.Error(err)
+	}
+	return list, err
 }
 
 func (r *ListRepository) UpdateList(list *entities.List, id int) (*entities.List, error) {
-	return list, nil
+	query := fmt.Sprintf("UPDATE %s SET title=$1, description=$2 WHERE id=$3 RETURNING *", listsTable)
+	err := r.db.BeginTxFunc(r.ctx, pgx.TxOptions{}, func(tx pgx.Tx) error {
+		rows, err := r.db.Query(r.ctx, query, list.Title, list.Description, id)
+		defer rows.Close()
+		for rows.Next() {
+			if err = rows.Scan(list); err != nil {
+				return err
+			}
+		}
+		return err
+	})
+	if err != nil {
+		logger.Error(err)
+	}
+	return list, err
 }
 
 func (r *ListRepository) DeleteList(id int) error {
-	return nil
+	query := fmt.Sprintf("DELETE FROM %s WHERE id=$1", listsTable)
+	err := r.db.BeginTxFunc(r.ctx, pgx.TxOptions{}, func(tx pgx.Tx) error {
+		_, err := r.db.Exec(r.ctx, query, id)
+		return err
+	})
+	if err != nil {
+		logger.Error(err)
+	}
+	return err
 }
