@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/jackc/pgx/v4"
-	"my_goods/internal/entities"
+	"my_goods/internal/entity"
 	"my_goods/internal/storage/postgres"
 	"my_goods/pkg/logger"
 )
@@ -22,8 +22,8 @@ func NewDishRepository(db postgres.PgxPoolInterface) *DishRepository {
 	return &DishRepository{db: db, ctx: context.Background()}
 }
 
-func (r *DishRepository) GetDish(id int) (*entities.Dish, error) {
-	var dish entities.Dish
+func (r *DishRepository) GetDish(id int) (*entity.Dish, error) {
+	var dish entity.Dish
 	query := fmt.Sprintf("SELECT id, title, description FROM %s WHERE id=$1", dishTable)
 	rows, err := r.db.Query(r.ctx, query, id)
 	defer rows.Close()
@@ -38,13 +38,13 @@ func (r *DishRepository) GetDish(id int) (*entities.Dish, error) {
 	return &dish, err
 }
 
-func (r *DishRepository) GetAllDishes() (*[]entities.Dish, error) {
-	var dishes []entities.Dish
+func (r *DishRepository) GetAllDishes() (*[]entity.Dish, error) {
+	var dishes []entity.Dish
 	query := fmt.Sprintf("SELECT * FROM %s", dishTable)
 	rows, err := r.db.Query(r.ctx, query)
 	defer rows.Close()
 	for rows.Next() {
-		var dish entities.Dish
+		var dish entity.Dish
 		if err = rows.Scan(&dish); err != nil {
 			logger.Error(err)
 		}
@@ -56,7 +56,7 @@ func (r *DishRepository) GetAllDishes() (*[]entities.Dish, error) {
 	return &dishes, err
 }
 
-func (r *DishRepository) CreateDish(dish *entities.Dish) (*entities.Dish, error) {
+func (r *DishRepository) CreateDish(dish *entity.Dish) (*entity.Dish, error) {
 	query := fmt.Sprintf("INSERT INTO %s (title, description) VALUES ($1, $2) RETURNING *", dishTable)
 	err := r.db.BeginTxFunc(r.ctx, pgx.TxOptions{}, func(tx pgx.Tx) error {
 		rows, err := r.db.Query(r.ctx, query, dish.Title, dish.Description)
@@ -74,7 +74,7 @@ func (r *DishRepository) CreateDish(dish *entities.Dish) (*entities.Dish, error)
 	return dish, err
 }
 
-func (r *DishRepository) UpdateDish(dish *entities.Dish, id int) (*entities.Dish, error) {
+func (r *DishRepository) UpdateDish(dish *entity.Dish, id int) (*entity.Dish, error) {
 	query := fmt.Sprintf("UPDATE %s SET title=$1, description=$2 WHERE id=$3 RETURNING *", dishTable)
 	err := r.db.BeginTxFunc(r.ctx, pgx.TxOptions{}, func(tx pgx.Tx) error {
 		rows, err := r.db.Query(r.ctx, query, dish.Title, dish.Description, id)

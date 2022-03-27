@@ -3,7 +3,7 @@ package goods_http
 import (
 	"github.com/gin-gonic/gin"
 	"my_goods/internal/delivery"
-	"my_goods/internal/entities"
+	"my_goods/internal/entity"
 	"net/http"
 	"strconv"
 )
@@ -48,7 +48,7 @@ func (h *GoodsHttpHandler) GetAllGoods(c *gin.Context) {
 }
 
 func (h *GoodsHttpHandler) CreateGoods(c *gin.Context) {
-	goods := entities.Goods{}
+	goods := entity.Goods{}
 	if err := c.BindJSON(&goods); err != nil {
 		c.AbortWithStatus(http.StatusBadRequest)
 		return
@@ -67,7 +67,7 @@ func (h *GoodsHttpHandler) UpdateGoods(c *gin.Context) {
 		c.AbortWithStatus(http.StatusBadRequest)
 		return
 	}
-	goods := entities.Goods{}
+	goods := entity.Goods{}
 	if err = c.BindJSON(&goods); err != nil {
 		c.AbortWithStatus(http.StatusBadRequest)
 		return
