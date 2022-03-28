@@ -9,6 +9,10 @@ import (
 	"my_goods/pkg/logger"
 )
 
+const (
+	goodsTable = "goods"
+)
+
 type GoodsRepository struct {
 	db  postgres.PgxPoolInterface
 	ctx context.Context
@@ -18,37 +22,33 @@ func NewGoodsRepository(db postgres.PgxPoolInterface) *GoodsRepository {
 	return &GoodsRepository{db: db, ctx: context.Background()}
 }
 
-const (
-	goodsTable = "goods"
-)
-
 func (r *GoodsRepository) GetGoods(id int) (*entity.Goods, error) {
-	var good entity.Goods
+	var good entity.PgxGoods
 	query := fmt.Sprintf("SELECT id, title, description FROM %s WHERE id=$1", goodsTable)
 	rows, err := r.db.Query(r.ctx, query, id)
 	defer rows.Close()
 	for rows.Next() {
-		if err = rows.Scan(&good); err != nil {
+		if err = rows.Scan(&good.Id, &good.Title, &good.Description); err != nil {
 			logger.Error(err)
 		}
 	}
 	if err != nil {
 		logger.Error(err)
 	}
-	return &good, err
+	return good.ToClean(), err
 }
 
 func (r *GoodsRepository) GetAllGoods() (*[]entity.Goods, error) {
 	var goods []entity.Goods
-	query := fmt.Sprintf("SELECT * FROM %s", goodsTable)
+	query := fmt.Sprintf("SELECT id, title, description FROM %s", goodsTable)
 	rows, err := r.db.Query(r.ctx, query)
 	defer rows.Close()
 	for rows.Next() {
-		var good entity.Goods
-		if err = rows.Scan(&good); err != nil {
+		var good entity.PgxGoods
+		if err = rows.Scan(&good.Id, &good.Title, &good.Description); err != nil {
 			logger.Error(err)
 		}
-		goods = append(goods, good)
+		goods = append(goods, *good.ToClean())
 	}
 	if err != nil {
 		logger.Error(err)
@@ -57,12 +57,13 @@ func (r *GoodsRepository) GetAllGoods() (*[]entity.Goods, error) {
 }
 
 func (r *GoodsRepository) CreateGoods(good *entity.Goods) (*entity.Goods, error) {
-	query := fmt.Sprintf("INSERT INTO %s (title, description) VALUES ($1, $2) RETURNING *", goodsTable)
+	var pgxGoods entity.PgxGoods
+	query := fmt.Sprintf("INSERT INTO %s (title, description) VALUES ($1, $2) RETURNING id, title, description", goodsTable)
 	err := r.db.BeginTxFunc(r.ctx, pgx.TxOptions{}, func(tx pgx.Tx) error {
 		rows, err := r.db.Query(r.ctx, query, good.Title, good.Description)
 		defer rows.Close()
 		for rows.Next() {
-			if err = rows.Scan(good); err != nil {
+			if err = rows.Scan(&pgxGoods.Id, &pgxGoods.Title, &pgxGoods.Description); err != nil {
 				return err
 			}
 		}
@@ -71,16 +72,17 @@ func (r *GoodsRepository) CreateGoods(good *entity.Goods) (*entity.Goods, error)
 	if err != nil {
 		logger.Error(err)
 	}
-	return good, err
+	return pgxGoods.ToClean(), err
 }
 
 func (r *GoodsRepository) UpdateGoods(good *entity.Goods, id int) (*entity.Goods, error) {
-	query := fmt.Sprintf("UPDATE %s SET title=$1, description=$2 WHERE id=$3 RETURNING *", goodsTable)
+	var pgxGoods entity.PgxGoods
+	query := fmt.Sprintf("UPDATE %s SET title=$1, description=$2 WHERE id=$3 RETURNING id, title, description", goodsTable)
 	err := r.db.BeginTxFunc(r.ctx, pgx.TxOptions{}, func(tx pgx.Tx) error {
 		rows, err := r.db.Query(r.ctx, query, good.Title, good.Description, id)
 		defer rows.Close()
 		for rows.Next() {
-			if err = rows.Scan(good); err != nil {
+			if err = rows.Scan(&pgxGoods.Id, &pgxGoods.Title, &pgxGoods.Description); err != nil {
 				return err
 			}
 		}
@@ -89,7 +91,7 @@ func (r *GoodsRepository) UpdateGoods(good *entity.Goods, id int) (*entity.Goods
 	if err != nil {
 		logger.Error(err)
 	}
-	return good, err
+	return pgxGoods.ToClean(), err
 }
 
 func (r *GoodsRepository) DeleteGoods(id int) error {

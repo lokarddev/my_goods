@@ -1,17 +1,25 @@
 package entity
 
-type Dish struct {
-	BaseModel
+type PgxDish struct {
+	PgxBaseModel
 }
 
-type CleanDish struct {
-	CleanBaseModel
-}
-
-func (m *Dish) ToClean() *CleanDish {
-	return &CleanDish{CleanBaseModel{
+func (m *PgxDish) ToClean() *Dish {
+	return &Dish{BaseModel{
 		Id:          m.Id.Int,
 		Title:       m.Title.String,
 		Description: m.Description.String,
 	}}
+}
+
+type Dish struct {
+	BaseModel
+}
+
+func (m *Dish) ToPgx() (*PgxDish, error) {
+	dish := &PgxDish{}
+	err := dish.Id.Set(m.Id)
+	err = dish.Title.Set(m.Title)
+	err = dish.Description.Set(m.Description)
+	return dish, err
 }
