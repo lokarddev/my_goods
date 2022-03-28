@@ -58,7 +58,7 @@ func (r *GoodsRepository) GetAllGoods() (*[]entity.Goods, error) {
 
 func (r *GoodsRepository) CreateGoods(good *entity.Goods) (*entity.Goods, error) {
 	var pgxGoods entity.PgxGoods
-	query := fmt.Sprintf("INSERT INTO %s (title, description) VALUES ($1, $2) RETURNING id, title, description", goodsTable)
+	query := fmt.Sprintf("INSERT INTO %s (created_at, updated_at, title, description) VALUES (now(), now(), $1, $2) RETURNING id, title, description", goodsTable)
 	err := r.db.BeginTxFunc(r.ctx, pgx.TxOptions{}, func(tx pgx.Tx) error {
 		rows, err := r.db.Query(r.ctx, query, good.Title, good.Description)
 		defer rows.Close()
@@ -77,7 +77,7 @@ func (r *GoodsRepository) CreateGoods(good *entity.Goods) (*entity.Goods, error)
 
 func (r *GoodsRepository) UpdateGoods(good *entity.Goods, id int) (*entity.Goods, error) {
 	var pgxGoods entity.PgxGoods
-	query := fmt.Sprintf("UPDATE %s SET title=$1, description=$2 WHERE id=$3 RETURNING id, title, description", goodsTable)
+	query := fmt.Sprintf("UPDATE %s SET updated_at=now(), title=$1, description=$2 WHERE id=$3 RETURNING id, title, description", goodsTable)
 	err := r.db.BeginTxFunc(r.ctx, pgx.TxOptions{}, func(tx pgx.Tx) error {
 		rows, err := r.db.Query(r.ctx, query, good.Title, good.Description, id)
 		defer rows.Close()

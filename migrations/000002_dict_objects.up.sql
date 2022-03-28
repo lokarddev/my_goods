@@ -4,7 +4,6 @@ create table measure
         primary key,
     created_at  timestamp with time zone,
     updated_at  timestamp with time zone,
-    deleted_at  timestamp with time zone,
     code       varchar(100),
     value       varchar(100)
 );

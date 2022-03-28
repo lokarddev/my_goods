@@ -58,7 +58,7 @@ func (r *DishRepository) GetAllDishes() (*[]entity.Dish, error) {
 
 func (r *DishRepository) CreateDish(dish *entity.Dish) (*entity.Dish, error) {
 	var pgxDish entity.PgxDish
-	query := fmt.Sprintf("INSERT INTO %s (title, description) VALUES ($1, $2) RETURNING id, title, description", dishTable)
+	query := fmt.Sprintf("INSERT INTO %s (created_at, updated_at, title, description) VALUES (now(), now(), $1, $2) RETURNING id, title, description", dishTable)
 	err := r.db.BeginTxFunc(r.ctx, pgx.TxOptions{}, func(tx pgx.Tx) error {
 		rows, err := r.db.Query(r.ctx, query, dish.Title, dish.Description)
 		defer rows.Close()
@@ -77,7 +77,7 @@ func (r *DishRepository) CreateDish(dish *entity.Dish) (*entity.Dish, error) {
 
 func (r *DishRepository) UpdateDish(dish *entity.Dish, id int) (*entity.Dish, error) {
 	var pgxDish entity.PgxDish
-	query := fmt.Sprintf("UPDATE %s SET title=$1, description=$2 WHERE id=$3 RETURNING id, title, description", dishTable)
+	query := fmt.Sprintf("UPDATE %s SET updated_at=now(), title=$1, description=$2 WHERE id=$3 RETURNING id, title, description", dishTable)
 	err := r.db.BeginTxFunc(r.ctx, pgx.TxOptions{}, func(tx pgx.Tx) error {
 		rows, err := r.db.Query(r.ctx, query, dish.Title, dish.Description, id)
 		defer rows.Close()

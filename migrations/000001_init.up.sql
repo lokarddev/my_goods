@@ -4,7 +4,6 @@ create table goods
         primary key,
     created_at  timestamp with time zone,
     updated_at  timestamp with time zone,
-    deleted_at  timestamp with time zone,
     title       text,
     description text
 );
@@ -15,7 +14,6 @@ create table dishes
         primary key,
     created_at  timestamp with time zone,
     updated_at  timestamp with time zone,
-    deleted_at  timestamp with time zone,
     title       text,
     description text
 );
@@ -26,7 +24,6 @@ create table lists
         primary key,
     created_at  timestamp with time zone,
     updated_at  timestamp with time zone,
-    deleted_at  timestamp with time zone,
     title       text,
     description text
 );

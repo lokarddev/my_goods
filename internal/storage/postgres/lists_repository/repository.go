@@ -58,7 +58,7 @@ func (r *ListRepository) GetAllLists() (*[]entity.List, error) {
 
 func (r *ListRepository) CreateList(list *entity.List) (*entity.List, error) {
 	var pgxList entity.PgxList
-	query := fmt.Sprintf("INSERT INTO %s (title, description) VALUES ($1, $2) RETURNING id, title, description", listsTable)
+	query := fmt.Sprintf("INSERT INTO %s (created_at, updated_at, title, description) VALUES (now(), now(), $1, $2) RETURNING id, title, description", listsTable)
 	err := r.db.BeginTxFunc(r.ctx, pgx.TxOptions{}, func(tx pgx.Tx) error {
 		rows, err := r.db.Query(r.ctx, query, list.Title, list.Description)
 		defer rows.Close()
@@ -77,7 +77,7 @@ func (r *ListRepository) CreateList(list *entity.List) (*entity.List, error) {
 
 func (r *ListRepository) UpdateList(list *entity.List, id int) (*entity.List, error) {
 	var pgxList entity.PgxList
-	query := fmt.Sprintf("UPDATE %s SET title=$1, description=$2 WHERE id=$3 RETURNING id, title, description", listsTable)
+	query := fmt.Sprintf("UPDATE %s SET updated_at=now(), title=$1, description=$2 WHERE id=$3 RETURNING id, title, description", listsTable)
 	err := r.db.BeginTxFunc(r.ctx, pgx.TxOptions{}, func(tx pgx.Tx) error {
 		rows, err := r.db.Query(r.ctx, query, list.Title, list.Description, id)
 		defer rows.Close()
