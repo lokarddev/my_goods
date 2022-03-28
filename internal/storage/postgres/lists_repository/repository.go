@@ -4,9 +4,13 @@ import (
 	"context"
 	"fmt"
 	"github.com/jackc/pgx/v4"
-	"my_goods/internal/entities"
+	"my_goods/internal/entity"
 	"my_goods/internal/storage/postgres"
 	"my_goods/pkg/logger"
+)
+
+const (
+	listsTable = "lists"
 )
 
 type ListRepository struct {
@@ -14,41 +18,37 @@ type ListRepository struct {
 	ctx context.Context
 }
 
-const (
-	listsTable = "lists"
-)
-
 func NewListRepository(db postgres.PgxPoolInterface) *ListRepository {
 	return &ListRepository{db: db, ctx: context.Background()}
 }
 
-func (r *ListRepository) GetList(id int) (*entities.List, error) {
-	var list entities.List
+func (r *ListRepository) GetList(id int) (*entity.List, error) {
+	var list entity.PgxList
 	query := fmt.Sprintf("SELECT id, title, description FROM %s WHERE id=$1", listsTable)
 	rows, err := r.db.Query(r.ctx, query, id)
 	defer rows.Close()
 	for rows.Next() {
-		if err = rows.Scan(&list); err != nil {
+		if err = rows.Scan(&list.Id, &list.Title, &list.Description); err != nil {
 			logger.Error(err)
 		}
 	}
 	if err != nil {
 		logger.Error(err)
 	}
-	return &list, err
+	return list.ToClean(), err
 }
 
-func (r *ListRepository) GetAllLists() (*[]entities.List, error) {
-	var lists []entities.List
+func (r *ListRepository) GetAllLists() (*[]entity.List, error) {
+	var lists []entity.List
 	query := fmt.Sprintf("SELECT * FROM %s", listsTable)
 	rows, err := r.db.Query(r.ctx, query)
 	defer rows.Close()
 	for rows.Next() {
-		var good entities.List
-		if err = rows.Scan(&good); err != nil {
+		var list entity.PgxList
+		if err = rows.Scan(&list.Id, &list.Title, &list.Description); err != nil {
 			logger.Error(err)
 		}
-		lists = append(lists, good)
+		lists = append(lists, *list.ToClean())
 	}
 	if err != nil {
 		logger.Error(err)
@@ -56,13 +56,14 @@ func (r *ListRepository) GetAllLists() (*[]entities.List, error) {
 	return &lists, err
 }
 
-func (r *ListRepository) CreateList(list *entities.List) (*entities.List, error) {
-	query := fmt.Sprintf("INSERT INTO %s (title, description) VALUES ($1, $2) RETURNING *", listsTable)
+func (r *ListRepository) CreateList(list *entity.List) (*entity.List, error) {
+	var pgxList entity.PgxList
+	query := fmt.Sprintf("INSERT INTO %s (title, description) VALUES ($1, $2) RETURNING id, title, description", listsTable)
 	err := r.db.BeginTxFunc(r.ctx, pgx.TxOptions{}, func(tx pgx.Tx) error {
 		rows, err := r.db.Query(r.ctx, query, list.Title, list.Description)
 		defer rows.Close()
 		for rows.Next() {
-			if err = rows.Scan(list); err != nil {
+			if err = rows.Scan(&pgxList.Id, &pgxList.Title, &pgxList.Description); err != nil {
 				return err
 			}
 		}
@@ -71,16 +72,17 @@ func (r *ListRepository) CreateList(list *entities.List) (*entities.List, error)
 	if err != nil {
 		logger.Error(err)
 	}
-	return list, err
+	return pgxList.ToClean(), err
 }
 
-func (r *ListRepository) UpdateList(list *entities.List, id int) (*entities.List, error) {
-	query := fmt.Sprintf("UPDATE %s SET title=$1, description=$2 WHERE id=$3 RETURNING *", listsTable)
+func (r *ListRepository) UpdateList(list *entity.List, id int) (*entity.List, error) {
+	var pgxList entity.PgxList
+	query := fmt.Sprintf("UPDATE %s SET title=$1, description=$2 WHERE id=$3 RETURNING id, title, description", listsTable)
 	err := r.db.BeginTxFunc(r.ctx, pgx.TxOptions{}, func(tx pgx.Tx) error {
 		rows, err := r.db.Query(r.ctx, query, list.Title, list.Description, id)
 		defer rows.Close()
 		for rows.Next() {
-			if err = rows.Scan(list); err != nil {
+			if err = rows.Scan(&pgxList.Id, &pgxList.Title, &pgxList.Description); err != nil {
 				return err
 			}
 		}
@@ -89,7 +91,7 @@ func (r *ListRepository) UpdateList(list *entities.List, id int) (*entities.List
 	if err != nil {
 		logger.Error(err)
 	}
-	return list, err
+	return pgxList.ToClean(), err
 }
 
 func (r *ListRepository) DeleteList(id int) error {

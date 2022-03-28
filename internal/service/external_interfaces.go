@@ -1,27 +1,27 @@
 package service
 
-import "my_goods/internal/entities"
+import "my_goods/internal/entity"
 
 type ListRepo interface {
-	GetList(id int) (*entities.List, error)
-	GetAllLists() (*[]entities.List, error)
-	CreateList(list *entities.List) (*entities.List, error)
-	UpdateList(list *entities.List, id int) (*entities.List, error)
+	GetList(id int) (*entity.List, error)
+	GetAllLists() (*[]entity.List, error)
+	CreateList(list *entity.List) (*entity.List, error)
+	UpdateList(list *entity.List, id int) (*entity.List, error)
 	DeleteList(id int) error
 }
 
 type GoodsRepo interface {
-	GetGoods(id int) (*entities.Goods, error)
-	GetAllGoods() (*[]entities.Goods, error)
-	CreateGoods(good *entities.Goods) (*entities.Goods, error)
-	UpdateGoods(good *entities.Goods, id int) (*entities.Goods, error)
+	GetGoods(id int) (*entity.Goods, error)
+	GetAllGoods() (*[]entity.Goods, error)
+	CreateGoods(good *entity.Goods) (*entity.Goods, error)
+	UpdateGoods(good *entity.Goods, id int) (*entity.Goods, error)
 	DeleteGoods(id int) error
 }
 
 type DishRepo interface {
-	GetAllDishes() (*[]entities.Dish, error)
-	GetDish(id int) (*entities.Dish, error)
-	CreateDish(dish *entities.Dish) (*entities.Dish, error)
-	UpdateDish(dish *entities.Dish, id int) (*entities.Dish, error)
+	GetAllDishes() (*[]entity.Dish, error)
+	GetDish(id int) (*entity.Dish, error)
+	CreateDish(dish *entity.Dish) (*entity.Dish, error)
+	UpdateDish(dish *entity.Dish, id int) (*entity.Dish, error)
 	DeleteDish(id int) error
 }

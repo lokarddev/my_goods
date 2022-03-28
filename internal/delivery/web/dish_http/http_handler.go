@@ -3,7 +3,7 @@ package dish_http
 import (
 	"github.com/gin-gonic/gin"
 	"my_goods/internal/delivery"
-	"my_goods/internal/entities"
+	"my_goods/internal/entity"
 	"net/http"
 	"strconv"
 )
@@ -48,7 +48,7 @@ func (h *DishHttpHandler) GetAllDishes(c *gin.Context) {
 }
 
 func (h *DishHttpHandler) CreateDish(c *gin.Context) {
-	dish := entities.Dish{}
+	dish := entity.Dish{}
 	if err := c.BindJSON(&dish); err != nil {
 		c.AbortWithStatus(http.StatusBadRequest)
 		return
@@ -67,7 +67,7 @@ func (h *DishHttpHandler) UpdateDish(c *gin.Context) {
 		c.AbortWithStatus(http.StatusBadRequest)
 		return
 	}
-	dish := entities.Dish{}
+	dish := entity.Dish{}
 	if err = c.BindJSON(&dish); err != nil {
 		c.AbortWithStatus(http.StatusBadRequest)
 		return

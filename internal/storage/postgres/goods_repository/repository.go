@@ -4,9 +4,13 @@ import (
 	"context"
 	"fmt"
 	"github.com/jackc/pgx/v4"
-	"my_goods/internal/entities"
+	"my_goods/internal/entity"
 	"my_goods/internal/storage/postgres"
 	"my_goods/pkg/logger"
+)
+
+const (
+	goodsTable = "goods"
 )
 
 type GoodsRepository struct {
@@ -18,37 +22,33 @@ func NewGoodsRepository(db postgres.PgxPoolInterface) *GoodsRepository {
 	return &GoodsRepository{db: db, ctx: context.Background()}
 }
 
-const (
-	goodsTable = "goods"
-)
-
-func (r *GoodsRepository) GetGoods(id int) (*entities.Goods, error) {
-	var good entities.Goods
+func (r *GoodsRepository) GetGoods(id int) (*entity.Goods, error) {
+	var good entity.PgxGoods
 	query := fmt.Sprintf("SELECT id, title, description FROM %s WHERE id=$1", goodsTable)
 	rows, err := r.db.Query(r.ctx, query, id)
 	defer rows.Close()
 	for rows.Next() {
-		if err = rows.Scan(&good); err != nil {
+		if err = rows.Scan(&good.Id, &good.Title, &good.Description); err != nil {
 			logger.Error(err)
 		}
 	}
 	if err != nil {
 		logger.Error(err)
 	}
-	return &good, err
+	return good.ToClean(), err
 }
 
-func (r *GoodsRepository) GetAllGoods() (*[]entities.Goods, error) {
-	var goods []entities.Goods
-	query := fmt.Sprintf("SELECT * FROM %s", goodsTable)
+func (r *GoodsRepository) GetAllGoods() (*[]entity.Goods, error) {
+	var goods []entity.Goods
+	query := fmt.Sprintf("SELECT id, title, description FROM %s", goodsTable)
 	rows, err := r.db.Query(r.ctx, query)
 	defer rows.Close()
 	for rows.Next() {
-		var good entities.Goods
-		if err = rows.Scan(&good); err != nil {
+		var good entity.PgxGoods
+		if err = rows.Scan(&good.Id, &good.Title, &good.Description); err != nil {
 			logger.Error(err)
 		}
-		goods = append(goods, good)
+		goods = append(goods, *good.ToClean())
 	}
 	if err != nil {
 		logger.Error(err)
@@ -56,13 +56,14 @@ func (r *GoodsRepository) GetAllGoods() (*[]entities.Goods, error) {
 	return &goods, err
 }
 
-func (r *GoodsRepository) CreateGoods(good *entities.Goods) (*entities.Goods, error) {
-	query := fmt.Sprintf("INSERT INTO %s (title, description) VALUES ($1, $2) RETURNING *", goodsTable)
+func (r *GoodsRepository) CreateGoods(good *entity.Goods) (*entity.Goods, error) {
+	var pgxGoods entity.PgxGoods
+	query := fmt.Sprintf("INSERT INTO %s (title, description) VALUES ($1, $2) RETURNING id, title, description", goodsTable)
 	err := r.db.BeginTxFunc(r.ctx, pgx.TxOptions{}, func(tx pgx.Tx) error {
 		rows, err := r.db.Query(r.ctx, query, good.Title, good.Description)
 		defer rows.Close()
 		for rows.Next() {
-			if err = rows.Scan(good); err != nil {
+			if err = rows.Scan(&pgxGoods.Id, &pgxGoods.Title, &pgxGoods.Description); err != nil {
 				return err
 			}
 		}
@@ -71,16 +72,17 @@ func (r *GoodsRepository) CreateGoods(good *entities.Goods) (*entities.Goods, er
 	if err != nil {
 		logger.Error(err)
 	}
-	return good, err
+	return pgxGoods.ToClean(), err
 }
 
-func (r *GoodsRepository) UpdateGoods(good *entities.Goods, id int) (*entities.Goods, error) {
-	query := fmt.Sprintf("UPDATE %s SET title=$1, description=$2 WHERE id=$3 RETURNING *", goodsTable)
+func (r *GoodsRepository) UpdateGoods(good *entity.Goods, id int) (*entity.Goods, error) {
+	var pgxGoods entity.PgxGoods
+	query := fmt.Sprintf("UPDATE %s SET title=$1, description=$2 WHERE id=$3 RETURNING id, title, description", goodsTable)
 	err := r.db.BeginTxFunc(r.ctx, pgx.TxOptions{}, func(tx pgx.Tx) error {
 		rows, err := r.db.Query(r.ctx, query, good.Title, good.Description, id)
 		defer rows.Close()
 		for rows.Next() {
-			if err = rows.Scan(good); err != nil {
+			if err = rows.Scan(&pgxGoods.Id, &pgxGoods.Title, &pgxGoods.Description); err != nil {
 				return err
 			}
 		}
@@ -89,7 +91,7 @@ func (r *GoodsRepository) UpdateGoods(good *entities.Goods, id int) (*entities.G
 	if err != nil {
 		logger.Error(err)
 	}
-	return good, err
+	return pgxGoods.ToClean(), err
 }
 
 func (r *GoodsRepository) DeleteGoods(id int) error {

@@ -3,7 +3,7 @@ package lists_http
 import (
 	"github.com/gin-gonic/gin"
 	"my_goods/internal/delivery"
-	"my_goods/internal/entities"
+	"my_goods/internal/entity"
 	"net/http"
 	"strconv"
 )
@@ -48,7 +48,7 @@ func (h *ListsHttpHandler) GetAllLists(c *gin.Context) {
 }
 
 func (h *ListsHttpHandler) CreateLists(c *gin.Context) {
-	lists := entities.List{}
+	lists := entity.List{}
 	if err := c.BindJSON(&lists); err != nil {
 		c.AbortWithStatus(http.StatusBadRequest)
 		return
@@ -67,7 +67,7 @@ func (h *ListsHttpHandler) UpdateLists(c *gin.Context) {
 		c.AbortWithStatus(http.StatusBadRequest)
 		return
 	}
-	lists := entities.List{}
+	lists := entity.List{}
 	if err = c.BindJSON(&lists); err != nil {
 		c.AbortWithStatus(http.StatusBadRequest)
 		return
