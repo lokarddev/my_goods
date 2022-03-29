@@ -10,7 +10,8 @@ import (
 )
 
 const (
-	dishTable = "dishes"
+	dishTable      = "dishes"
+	dishGoodsTable = "dish_goods"
 )
 
 type DishRepository struct {
@@ -103,5 +104,22 @@ func (r *DishRepository) DeleteDish(id int) error {
 	if err != nil {
 		logger.Error(err)
 	}
+	return err
+}
+
+func (r *DishRepository) AddGoods(dishId int32, goods map[int32]int32) error {
+	b := &pgx.Batch{}
+	for k, v := range goods {
+		query := fmt.Sprintf("INSERT INTO %s (dish_id, goods_id, amount) VALUES ($1, $2, $3)", dishGoodsTable)
+		b.Queue(query, dishId, k, v)
+	}
+	err := r.db.BeginTxFunc(r.ctx, pgx.TxOptions{}, func(tx pgx.Tx) error {
+		res := tx.SendBatch(r.ctx, b)
+		err := res.Close()
+		if err != nil {
+			logger.Error(err)
+		}
+		return err
+	})
 	return err
 }

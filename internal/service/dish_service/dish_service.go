@@ -32,3 +32,7 @@ func (s *DishService) UpdateDish(dish *entity.Dish, id int) (*entity.Dish, error
 func (s *DishService) DeleteDish(id int) error {
 	return s.repo.DeleteDish(id)
 }
+
+func (s *DishService) AddGoods(dishId int32, goods map[int32]int32) error {
+	return s.repo.AddGoods(dishId, goods)
+}

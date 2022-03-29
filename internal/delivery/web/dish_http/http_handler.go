@@ -21,6 +21,7 @@ func (h *DishHttpHandler) RegisterRoutes(api *gin.RouterGroup) {
 	api.GET("get-dishes/", h.GetAllDishes)
 	api.POST("create-dish/", h.CreateDish)
 	api.POST("update-dish/:dish_id", h.UpdateDish)
+	api.POST("add-goods/", h.AddGoodsToDish)
 	api.DELETE("delete-dish/:dish_id", h.DeleteDish)
 }
 
@@ -87,6 +88,25 @@ func (h *DishHttpHandler) DeleteDish(c *gin.Context) {
 		return
 	}
 	if err = h.service.DeleteDish(id); err != nil {
+		c.AbortWithStatus(http.StatusInternalServerError)
+		return
+	}
+	c.Status(http.StatusOK)
+}
+
+type addGoodsRequest struct {
+	DishId int32           `json:"dish_id"`
+	Goods  map[int32]int32 `json:"goods"`
+}
+
+func (h *DishHttpHandler) AddGoodsToDish(c *gin.Context) {
+	var goods addGoodsRequest
+	if err := c.BindJSON(&goods); err != nil {
+		c.AbortWithStatus(http.StatusBadRequest)
+		return
+	}
+	err := h.service.AddGoods(goods.DishId, goods.Goods)
+	if err != nil {
 		c.AbortWithStatus(http.StatusInternalServerError)
 		return
 	}

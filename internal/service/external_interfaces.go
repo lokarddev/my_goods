@@ -24,4 +24,5 @@ type DishRepo interface {
 	CreateDish(dish *entity.Dish) (*entity.Dish, error)
 	UpdateDish(dish *entity.Dish, id int) (*entity.Dish, error)
 	DeleteDish(id int) error
+	AddGoods(id int32, goods map[int32]int32) error
 }
