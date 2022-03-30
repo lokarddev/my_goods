@@ -3,11 +3,13 @@ package delivery
 import "my_goods/internal/entity"
 
 type DishServiceInterface interface {
-	GetAllDishes() (*[]entity.Dish, error)
-	GetDish(id int) (*entity.Dish, error)
+	GetAllDishes() (*[]entity.DishesResponse, error)
+	GetDish(id int32) (*entity.DishesResponse, error)
 	CreateDish(dish *entity.Dish) (*entity.Dish, error)
-	UpdateDish(dish *entity.Dish, id int) (*entity.Dish, error)
-	DeleteDish(id int) error
+	UpdateDish(dish *entity.Dish, id int32) (*entity.DishesResponse, error)
+	DeleteDish(id int32) error
+	AddGoods(dishId int32, goods map[int32]int32) error
+	RemoveGoodsFromDish(dishId int32, goodsIds []int32) error
 }
 
 type GoodsServiceInterface interface {
@@ -24,4 +26,6 @@ type ListServiceInterface interface {
 	CreateList(list *entity.List) (*entity.List, error)
 	UpdateList(list *entity.List, id int) (*entity.List, error)
 	DeleteList(id int) error
+	AddGoodsToList(listId int32, goods map[int32]int32) error
+	AddDishToLIst(listId int32, dishes map[int32]int32) error
 }

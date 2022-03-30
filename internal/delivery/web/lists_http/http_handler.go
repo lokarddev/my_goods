@@ -17,11 +17,13 @@ func NewListsHttpHandler(service delivery.ListServiceInterface) *ListsHttpHandle
 }
 
 func (h *ListsHttpHandler) RegisterRoutes(api *gin.RouterGroup) {
-	api.GET("get-lists/:lists_id", h.GetLists)
-	api.GET("get-lists/", h.GetAllLists)
-	api.POST("create-lists/", h.CreateLists)
-	api.POST("update-lists/:lists_id", h.UpdateLists)
-	api.DELETE("delete-lists/:lists_id", h.DeleteLists)
+	api.GET("get_lists/:lists_id", h.GetLists)
+	api.GET("get_lists/", h.GetAllLists)
+	api.POST("create_lists/", h.CreateLists)
+	api.POST("update_lists/:lists_id", h.UpdateLists)
+	api.DELETE("delete_lists/:lists_id", h.DeleteLists)
+	api.POST("add_goods_to_list/", h.AddGoodsToList)
+	api.POST("add_dish_to_list/", h.AddDishToList)
 }
 
 func (h *ListsHttpHandler) GetLists(c *gin.Context) {
@@ -87,6 +89,32 @@ func (h *ListsHttpHandler) DeleteLists(c *gin.Context) {
 		return
 	}
 	if err = h.service.DeleteList(id); err != nil {
+		c.AbortWithStatus(http.StatusInternalServerError)
+		return
+	}
+	c.Status(http.StatusOK)
+}
+
+func (h *ListsHttpHandler) AddGoodsToList(c *gin.Context) {
+	var request entity.AddToListRequest
+	if err := c.BindJSON(&request); err != nil {
+		c.AbortWithStatus(http.StatusBadRequest)
+		return
+	}
+	if err := h.service.AddGoodsToList(request.ListId, request.Ids); err != nil {
+		c.AbortWithStatus(http.StatusInternalServerError)
+		return
+	}
+	c.Status(http.StatusOK)
+}
+
+func (h *ListsHttpHandler) AddDishToList(c *gin.Context) {
+	var request entity.AddToListRequest
+	if err := c.BindJSON(&request); err != nil {
+		c.AbortWithStatus(http.StatusBadRequest)
+		return
+	}
+	if err := h.service.AddDishToLIst(request.ListId, request.Ids); err != nil {
 		c.AbortWithStatus(http.StatusInternalServerError)
 		return
 	}

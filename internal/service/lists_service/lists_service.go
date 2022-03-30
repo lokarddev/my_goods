@@ -32,3 +32,11 @@ func (s *ListService) UpdateList(list *entity.List, id int) (*entity.List, error
 func (s *ListService) DeleteList(id int) error {
 	return s.repo.DeleteList(id)
 }
+
+func (s *ListService) AddGoodsToList(listId int32, goods map[int32]int32) error {
+	return s.repo.AddGoodsToList(listId, goods)
+}
+
+func (s *ListService) AddDishToLIst(listId int32, dishes map[int32]int32) error {
+	return s.repo.AddDishToList(listId, dishes)
+}
