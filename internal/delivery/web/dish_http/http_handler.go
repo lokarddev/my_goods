@@ -23,6 +23,7 @@ func (h *DishHttpHandler) RegisterRoutes(api *gin.RouterGroup) {
 	api.POST("update_dish/:dish_id", h.UpdateDish)
 	api.POST("add_goods_to_dish/", h.AddGoodsToDish)
 	api.DELETE("delete_dish/:dish_id", h.DeleteDish)
+	api.DELETE("remove_goods_from_dish/", h.RemoveGoodsFromDish)
 }
 
 func (h *DishHttpHandler) GetDish(c *gin.Context) {
@@ -31,7 +32,7 @@ func (h *DishHttpHandler) GetDish(c *gin.Context) {
 		c.AbortWithStatus(http.StatusBadRequest)
 		return
 	}
-	dish, err := h.service.GetDish(id)
+	dish, err := h.service.GetDish(int32(id))
 	if err != nil {
 		c.AbortWithStatus(http.StatusInternalServerError)
 		return
@@ -73,7 +74,7 @@ func (h *DishHttpHandler) UpdateDish(c *gin.Context) {
 		c.AbortWithStatus(http.StatusBadRequest)
 		return
 	}
-	res, err := h.service.UpdateDish(&dish, id)
+	res, err := h.service.UpdateDish(&dish, int32(id))
 	if err != nil {
 		c.AbortWithStatus(http.StatusInternalServerError)
 		return
@@ -87,25 +88,34 @@ func (h *DishHttpHandler) DeleteDish(c *gin.Context) {
 		c.AbortWithStatus(http.StatusBadRequest)
 		return
 	}
-	if err = h.service.DeleteDish(id); err != nil {
+	if err = h.service.DeleteDish(int32(id)); err != nil {
 		c.AbortWithStatus(http.StatusInternalServerError)
 		return
 	}
 	c.Status(http.StatusOK)
 }
 
-type addToDishRequest struct {
-	DishId int32           `json:"dish_id"`
-	Ids    map[int32]int32 `json:"ids"`
-}
-
 func (h *DishHttpHandler) AddGoodsToDish(c *gin.Context) {
-	var goods addToDishRequest
+	var goods entity.AddToDishRequest
 	if err := c.BindJSON(&goods); err != nil {
 		c.AbortWithStatus(http.StatusBadRequest)
 		return
 	}
 	err := h.service.AddGoods(goods.DishId, goods.Ids)
+	if err != nil {
+		c.AbortWithStatus(http.StatusInternalServerError)
+		return
+	}
+	c.Status(http.StatusOK)
+}
+
+func (h *DishHttpHandler) RemoveGoodsFromDish(c *gin.Context) {
+	var goods entity.RemoveFromDishRequest
+	if err := c.BindJSON(&goods); err != nil {
+		c.AbortWithStatus(http.StatusBadRequest)
+		return
+	}
+	err := h.service.RemoveGoodsFromDish(goods.DishId, goods.Ids)
 	if err != nil {
 		c.AbortWithStatus(http.StatusInternalServerError)
 		return

@@ -9,12 +9,6 @@ import (
 	"my_goods/pkg/logger"
 )
 
-const (
-	listsTable   = "lists"
-	listToDishes = "list_dishes"
-	listToGoods  = "list_goods"
-)
-
 type ListRepository struct {
 	db  postgres.PgxPoolInterface
 	ctx context.Context
@@ -26,7 +20,7 @@ func NewListRepository(db postgres.PgxPoolInterface) *ListRepository {
 
 func (r *ListRepository) GetList(id int) (*entity.List, error) {
 	var list entity.PgxList
-	query := fmt.Sprintf("SELECT id, title, description FROM %s WHERE id=$1", listsTable)
+	query := fmt.Sprintf("SELECT id, title, description FROM %s WHERE id=$1", postgres.ListsTable)
 	rows, err := r.db.Query(r.ctx, query, id)
 	defer rows.Close()
 	for rows.Next() {
@@ -42,7 +36,7 @@ func (r *ListRepository) GetList(id int) (*entity.List, error) {
 
 func (r *ListRepository) GetAllLists() (*[]entity.List, error) {
 	var lists []entity.List
-	query := fmt.Sprintf("SELECT * FROM %s", listsTable)
+	query := fmt.Sprintf("SELECT * FROM %s", postgres.ListsTable)
 	rows, err := r.db.Query(r.ctx, query)
 	defer rows.Close()
 	for rows.Next() {
@@ -60,7 +54,7 @@ func (r *ListRepository) GetAllLists() (*[]entity.List, error) {
 
 func (r *ListRepository) CreateList(list *entity.List) (*entity.List, error) {
 	var pgxList entity.PgxList
-	query := fmt.Sprintf("INSERT INTO %s (created_at, updated_at, title, description) VALUES (now(), now(), $1, $2) RETURNING id, title, description", listsTable)
+	query := fmt.Sprintf("INSERT INTO %s (created_at, updated_at, title, description) VALUES (now(), now(), $1, $2) RETURNING id, title, description", postgres.ListsTable)
 	err := r.db.BeginTxFunc(r.ctx, pgx.TxOptions{}, func(tx pgx.Tx) error {
 		rows, err := r.db.Query(r.ctx, query, list.Title, list.Description)
 		defer rows.Close()
@@ -79,7 +73,7 @@ func (r *ListRepository) CreateList(list *entity.List) (*entity.List, error) {
 
 func (r *ListRepository) UpdateList(list *entity.List, id int) (*entity.List, error) {
 	var pgxList entity.PgxList
-	query := fmt.Sprintf("UPDATE %s SET updated_at=now(), title=$1, description=$2 WHERE id=$3 RETURNING id, title, description", listsTable)
+	query := fmt.Sprintf("UPDATE %s SET updated_at=now(), title=$1, description=$2 WHERE id=$3 RETURNING id, title, description", postgres.ListsTable)
 	err := r.db.BeginTxFunc(r.ctx, pgx.TxOptions{}, func(tx pgx.Tx) error {
 		rows, err := r.db.Query(r.ctx, query, list.Title, list.Description, id)
 		defer rows.Close()
@@ -97,7 +91,7 @@ func (r *ListRepository) UpdateList(list *entity.List, id int) (*entity.List, er
 }
 
 func (r *ListRepository) DeleteList(id int) error {
-	query := fmt.Sprintf("DELETE FROM %s WHERE id=$1", listsTable)
+	query := fmt.Sprintf("DELETE FROM %s WHERE id=$1", postgres.ListsTable)
 	err := r.db.BeginTxFunc(r.ctx, pgx.TxOptions{}, func(tx pgx.Tx) error {
 		_, err := r.db.Exec(r.ctx, query, id)
 		return err
@@ -111,7 +105,7 @@ func (r *ListRepository) DeleteList(id int) error {
 func (r *ListRepository) AddDishToList(listId int32, dishes map[int32]int32) error {
 	b := &pgx.Batch{}
 	for k, v := range dishes {
-		query := fmt.Sprintf("INSERT INTO %s (dish_id, goods_id, amount) VALUES ($1, $2, $3)", listToDishes)
+		query := fmt.Sprintf("INSERT INTO %s (dish_id, goods_id, amount) VALUES ($1, $2, $3)", postgres.ListToDishes)
 		b.Queue(query, listId, k, v)
 	}
 	err := r.db.BeginTxFunc(r.ctx, pgx.TxOptions{}, func(tx pgx.Tx) error {
@@ -128,7 +122,7 @@ func (r *ListRepository) AddDishToList(listId int32, dishes map[int32]int32) err
 func (r *ListRepository) AddGoodsToList(listId int32, goods map[int32]int32) error {
 	b := &pgx.Batch{}
 	for k, v := range goods {
-		query := fmt.Sprintf("INSERT INTO %s (dish_id, goods_id, amount) VALUES ($1, $2, $3)", listToGoods)
+		query := fmt.Sprintf("INSERT INTO %s (dish_id, goods_id, amount) VALUES ($1, $2, $3)", postgres.ListToGoods)
 		b.Queue(query, listId, k, v)
 	}
 	err := r.db.BeginTxFunc(r.ctx, pgx.TxOptions{}, func(tx pgx.Tx) error {

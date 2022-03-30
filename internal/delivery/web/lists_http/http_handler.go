@@ -95,13 +95,8 @@ func (h *ListsHttpHandler) DeleteLists(c *gin.Context) {
 	c.Status(http.StatusOK)
 }
 
-type addToListRequest struct {
-	ListId int32           `json:"dish_id"`
-	Ids    map[int32]int32 `json:"ids"`
-}
-
 func (h *ListsHttpHandler) AddGoodsToList(c *gin.Context) {
-	var request addToListRequest
+	var request entity.AddToListRequest
 	if err := c.BindJSON(&request); err != nil {
 		c.AbortWithStatus(http.StatusBadRequest)
 		return
@@ -114,7 +109,7 @@ func (h *ListsHttpHandler) AddGoodsToList(c *gin.Context) {
 }
 
 func (h *ListsHttpHandler) AddDishToList(c *gin.Context) {
-	var request addToListRequest
+	var request entity.AddToListRequest
 	if err := c.BindJSON(&request); err != nil {
 		c.AbortWithStatus(http.StatusBadRequest)
 		return
