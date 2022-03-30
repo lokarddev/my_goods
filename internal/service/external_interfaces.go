@@ -8,6 +8,8 @@ type ListRepo interface {
 	CreateList(list *entity.List) (*entity.List, error)
 	UpdateList(list *entity.List, id int) (*entity.List, error)
 	DeleteList(id int) error
+	AddGoodsToList(listId int32, goods map[int32]int32) error
+	AddDishToList(listId int32, dishes map[int32]int32) error
 }
 
 type GoodsRepo interface {

@@ -10,7 +10,9 @@ import (
 )
 
 const (
-	listsTable = "lists"
+	listsTable   = "lists"
+	listToDishes = "list_dishes"
+	listToGoods  = "list_goods"
 )
 
 type ListRepository struct {
@@ -103,5 +105,39 @@ func (r *ListRepository) DeleteList(id int) error {
 	if err != nil {
 		logger.Error(err)
 	}
+	return err
+}
+
+func (r *ListRepository) AddDishToList(listId int32, dishes map[int32]int32) error {
+	b := &pgx.Batch{}
+	for k, v := range dishes {
+		query := fmt.Sprintf("INSERT INTO %s (dish_id, goods_id, amount) VALUES ($1, $2, $3)", listToDishes)
+		b.Queue(query, listId, k, v)
+	}
+	err := r.db.BeginTxFunc(r.ctx, pgx.TxOptions{}, func(tx pgx.Tx) error {
+		res := tx.SendBatch(r.ctx, b)
+		err := res.Close()
+		if err != nil {
+			logger.Error(err)
+		}
+		return err
+	})
+	return err
+}
+
+func (r *ListRepository) AddGoodsToList(listId int32, goods map[int32]int32) error {
+	b := &pgx.Batch{}
+	for k, v := range goods {
+		query := fmt.Sprintf("INSERT INTO %s (dish_id, goods_id, amount) VALUES ($1, $2, $3)", listToGoods)
+		b.Queue(query, listId, k, v)
+	}
+	err := r.db.BeginTxFunc(r.ctx, pgx.TxOptions{}, func(tx pgx.Tx) error {
+		res := tx.SendBatch(r.ctx, b)
+		err := res.Close()
+		if err != nil {
+			logger.Error(err)
+		}
+		return err
+	})
 	return err
 }

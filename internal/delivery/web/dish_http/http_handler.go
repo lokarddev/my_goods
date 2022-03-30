@@ -17,12 +17,12 @@ func NewDishHttpHandler(service delivery.DishServiceInterface) *DishHttpHandler 
 }
 
 func (h *DishHttpHandler) RegisterRoutes(api *gin.RouterGroup) {
-	api.GET("get-dish/:dish_id", h.GetDish)
-	api.GET("get-dishes/", h.GetAllDishes)
-	api.POST("create-dish/", h.CreateDish)
-	api.POST("update-dish/:dish_id", h.UpdateDish)
-	api.POST("add-goods/", h.AddGoodsToDish)
-	api.DELETE("delete-dish/:dish_id", h.DeleteDish)
+	api.GET("get_dish/:dish_id", h.GetDish)
+	api.GET("get_dishes/", h.GetAllDishes)
+	api.POST("create_dish/", h.CreateDish)
+	api.POST("update_dish/:dish_id", h.UpdateDish)
+	api.POST("add_goods_to_dish/", h.AddGoodsToDish)
+	api.DELETE("delete_dish/:dish_id", h.DeleteDish)
 }
 
 func (h *DishHttpHandler) GetDish(c *gin.Context) {
@@ -94,18 +94,18 @@ func (h *DishHttpHandler) DeleteDish(c *gin.Context) {
 	c.Status(http.StatusOK)
 }
 
-type addGoodsRequest struct {
+type addToDishRequest struct {
 	DishId int32           `json:"dish_id"`
-	Goods  map[int32]int32 `json:"goods"`
+	Ids    map[int32]int32 `json:"ids"`
 }
 
 func (h *DishHttpHandler) AddGoodsToDish(c *gin.Context) {
-	var goods addGoodsRequest
+	var goods addToDishRequest
 	if err := c.BindJSON(&goods); err != nil {
 		c.AbortWithStatus(http.StatusBadRequest)
 		return
 	}
-	err := h.service.AddGoods(goods.DishId, goods.Goods)
+	err := h.service.AddGoods(goods.DishId, goods.Ids)
 	if err != nil {
 		c.AbortWithStatus(http.StatusInternalServerError)
 		return
