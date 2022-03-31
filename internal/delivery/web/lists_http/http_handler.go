@@ -32,7 +32,7 @@ func (h *ListsHttpHandler) GetLists(c *gin.Context) {
 		c.AbortWithStatus(http.StatusBadRequest)
 		return
 	}
-	lists, err := h.service.GetList(id)
+	lists, err := h.service.GetList(int32(id))
 	if err != nil {
 		c.AbortWithStatus(http.StatusInternalServerError)
 		return
@@ -74,7 +74,7 @@ func (h *ListsHttpHandler) UpdateLists(c *gin.Context) {
 		c.AbortWithStatus(http.StatusBadRequest)
 		return
 	}
-	res, err := h.service.UpdateList(&lists, id)
+	res, err := h.service.UpdateList(&lists, int32(id))
 	if err != nil {
 		c.AbortWithStatus(http.StatusInternalServerError)
 		return
@@ -88,7 +88,7 @@ func (h *ListsHttpHandler) DeleteLists(c *gin.Context) {
 		c.AbortWithStatus(http.StatusBadRequest)
 		return
 	}
-	if err = h.service.DeleteList(id); err != nil {
+	if err = h.service.DeleteList(int32(id)); err != nil {
 		c.AbortWithStatus(http.StatusInternalServerError)
 		return
 	}

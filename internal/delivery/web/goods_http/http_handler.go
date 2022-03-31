@@ -30,7 +30,7 @@ func (h *GoodsHttpHandler) GetGoods(c *gin.Context) {
 		c.AbortWithStatus(http.StatusBadRequest)
 		return
 	}
-	goods, err := h.service.GetGoods(id)
+	goods, err := h.service.GetGoods(int32(id))
 	if err != nil {
 		c.AbortWithStatus(http.StatusInternalServerError)
 		return
@@ -72,7 +72,7 @@ func (h *GoodsHttpHandler) UpdateGoods(c *gin.Context) {
 		c.AbortWithStatus(http.StatusBadRequest)
 		return
 	}
-	res, err := h.service.UpdateGoods(&goods, id)
+	res, err := h.service.UpdateGoods(&goods, int32(id))
 	if err != nil {
 		c.AbortWithStatus(http.StatusInternalServerError)
 		return
@@ -86,7 +86,7 @@ func (h *GoodsHttpHandler) DeleteGoods(c *gin.Context) {
 		c.AbortWithStatus(http.StatusBadRequest)
 		return
 	}
-	if err = h.service.DeleteGoods(id); err != nil {
+	if err = h.service.DeleteGoods(int32(id)); err != nil {
 		c.AbortWithStatus(http.StatusInternalServerError)
 		return
 	}

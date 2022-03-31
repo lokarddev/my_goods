@@ -20,7 +20,7 @@ func NewGoodsRepository(db postgres.PgxPoolInterface) *GoodsRepository {
 	}}
 }
 
-func (r *GoodsRepository) GetGoods(id int) (*entity.Goods, error) {
+func (r *GoodsRepository) GetGoods(id int32) (*entity.Goods, error) {
 	var good entity.PgxGoods
 	query := fmt.Sprintf("SELECT id, title, description FROM %s WHERE id=$1", postgres.GoodsTable)
 	rows, err := r.DB.Query(r.Ctx, query, id)
@@ -73,7 +73,7 @@ func (r *GoodsRepository) CreateGoods(good *entity.Goods) (*entity.Goods, error)
 	return pgxGoods.ToClean(), err
 }
 
-func (r *GoodsRepository) UpdateGoods(good *entity.Goods, id int) (*entity.Goods, error) {
+func (r *GoodsRepository) UpdateGoods(good *entity.Goods, id int32) (*entity.Goods, error) {
 	var pgxGoods entity.PgxGoods
 	query := fmt.Sprintf("UPDATE %s SET updated_at=now(), title=$1, description=$2 WHERE id=$3 RETURNING id, title, description", postgres.GoodsTable)
 	err := r.DB.BeginTxFunc(r.Ctx, pgx.TxOptions{}, func(tx pgx.Tx) error {
@@ -92,7 +92,7 @@ func (r *GoodsRepository) UpdateGoods(good *entity.Goods, id int) (*entity.Goods
 	return pgxGoods.ToClean(), err
 }
 
-func (r *GoodsRepository) DeleteGoods(id int) error {
+func (r *GoodsRepository) DeleteGoods(id int32) error {
 	query := fmt.Sprintf("DELETE FROM %s WHERE id=$1", postgres.GoodsTable)
 	err := r.DB.BeginTxFunc(r.Ctx, pgx.TxOptions{}, func(tx pgx.Tx) error {
 		_, err := r.DB.Exec(r.Ctx, query, id)
