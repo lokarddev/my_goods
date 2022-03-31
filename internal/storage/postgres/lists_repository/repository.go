@@ -126,10 +126,7 @@ func (r *ListRepository) GetAllLists() (*[]entity.ListsResponse, error) {
 	var response []entity.ListsResponse
 	var lists []entity.List
 
-	goods := &[]entity.GoodsWithAmount{}
-	dishes := &[]entity.DishesResponse{}
-
-	query := fmt.Sprintf("SELECT id, title FROM %s", postgres.ListsTable)
+	query := fmt.Sprintf("SELECT id, title, description FROM %s", postgres.ListsTable)
 	rows, err := r.DB.Query(r.Ctx, query)
 	defer rows.Close()
 	for rows.Next() {
@@ -142,25 +139,14 @@ func (r *ListRepository) GetAllLists() (*[]entity.ListsResponse, error) {
 	if err != nil {
 		logger.Error(err)
 	}
-
-	wg := &sync.WaitGroup{}
-	wg.Add(3)
-	for _, list := range lists {
-		go func(wg *sync.WaitGroup, id int32) {
-			dishes, err = r.getDishesInfo(id)
-			wg.Done()
-		}(wg, list.Id)
-
-		go func(wg *sync.WaitGroup, id int32) {
-			goods, err = r.getGoodsInfo(id)
-			wg.Done()
-		}(wg, list.Id)
-		response = append(response, entity.ListsResponse{
-			List:   list,
-			Dishes: *dishes,
-			Goods:  *goods,
-		})
+	for _, v := range lists {
+		list, err := r.GetList(v.Id)
+		if err != nil {
+			logger.Error(err)
+		}
+		response = append(response, *list)
 	}
+
 	return &response, err
 }
 
@@ -214,11 +200,11 @@ func (r *ListRepository) DeleteList(id int32) error {
 	return err
 }
 
-func (r *ListRepository) AddDishToList(listId int32, dishes map[int32]int32) error {
+func (r *ListRepository) AddDishToList(listId int32, dishes []int32) error {
 	b := &pgx.Batch{}
-	for k, v := range dishes {
-		query := fmt.Sprintf("INSERT INTO %s (dish_id, goods_id, amount) VALUES ($1, $2, $3)", postgres.ListToDishes)
-		b.Queue(query, listId, k, v)
+	for _, dishId := range dishes {
+		query := fmt.Sprintf("INSERT INTO %s (list_id, dish_id) VALUES ($1, $2)", postgres.ListToDishes)
+		b.Queue(query, listId, dishId)
 	}
 	err := r.DB.BeginTxFunc(r.Ctx, pgx.TxOptions{}, func(tx pgx.Tx) error {
 		res := tx.SendBatch(r.Ctx, b)
@@ -234,7 +220,7 @@ func (r *ListRepository) AddDishToList(listId int32, dishes map[int32]int32) err
 func (r *ListRepository) AddGoodsToList(listId int32, goods map[int32]int32) error {
 	b := &pgx.Batch{}
 	for k, v := range goods {
-		query := fmt.Sprintf("INSERT INTO %s (dish_id, goods_id, amount) VALUES ($1, $2, $3)", postgres.ListToGoods)
+		query := fmt.Sprintf("INSERT INTO %s (list_id, goods_id, amount) VALUES ($1, $2, $3)", postgres.ListToGoods)
 		b.Queue(query, listId, k, v)
 	}
 	err := r.DB.BeginTxFunc(r.Ctx, pgx.TxOptions{}, func(tx pgx.Tx) error {

@@ -1,8 +1,13 @@
 package entity
 
-type AddToListRequest struct {
-	ListId int32           `json:"dish_id"`
+type AddGoodsListRequest struct {
+	ListId int32           `json:"list_id"`
 	Ids    map[int32]int32 `json:"ids"`
+}
+
+type AddDishListRequest struct {
+	ListId int32   `json:"list_id"`
+	Ids    []int32 `json:"ids"`
 }
 
 type AddToDishRequest struct {
