@@ -17,11 +17,11 @@ func NewGoodsHttpHandler(service delivery.GoodsServiceInterface) *GoodsHttpHandl
 }
 
 func (h *GoodsHttpHandler) RegisterRoutes(api *gin.RouterGroup) {
-	api.GET("get-goods/:goods_id", h.GetGoods)
-	api.GET("get-goods/", h.GetAllGoods)
-	api.POST("create-goods/", h.CreateGoods)
-	api.POST("update-goods/:goods_id", h.UpdateGoods)
-	api.DELETE("delete-goods/:goods_id", h.DeleteGoods)
+	api.GET("get_goods/:goods_id", h.GetGoods)
+	api.GET("get_goods/", h.GetAllGoods)
+	api.POST("create_goods/", h.CreateGoods)
+	api.POST("update_goods/:goods_id", h.UpdateGoods)
+	api.DELETE("delete_goods/:goods_id", h.DeleteGoods)
 }
 
 func (h *GoodsHttpHandler) GetGoods(c *gin.Context) {
@@ -30,7 +30,7 @@ func (h *GoodsHttpHandler) GetGoods(c *gin.Context) {
 		c.AbortWithStatus(http.StatusBadRequest)
 		return
 	}
-	goods, err := h.service.GetGoods(id)
+	goods, err := h.service.GetGoods(int32(id))
 	if err != nil {
 		c.AbortWithStatus(http.StatusInternalServerError)
 		return
@@ -72,7 +72,7 @@ func (h *GoodsHttpHandler) UpdateGoods(c *gin.Context) {
 		c.AbortWithStatus(http.StatusBadRequest)
 		return
 	}
-	res, err := h.service.UpdateGoods(&goods, id)
+	res, err := h.service.UpdateGoods(&goods, int32(id))
 	if err != nil {
 		c.AbortWithStatus(http.StatusInternalServerError)
 		return
@@ -86,7 +86,7 @@ func (h *GoodsHttpHandler) DeleteGoods(c *gin.Context) {
 		c.AbortWithStatus(http.StatusBadRequest)
 		return
 	}
-	if err = h.service.DeleteGoods(id); err != nil {
+	if err = h.service.DeleteGoods(int32(id)); err != nil {
 		c.AbortWithStatus(http.StatusInternalServerError)
 		return
 	}

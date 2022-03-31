@@ -7,7 +7,7 @@ type DishesResponse struct {
 
 type ListsResponse struct {
 	List   List
-	Dishes []Dish
+	Dishes []DishesResponse
 	Goods  []GoodsWithAmount
 }
 
