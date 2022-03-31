@@ -96,7 +96,7 @@ func (h *ListsHttpHandler) DeleteLists(c *gin.Context) {
 }
 
 func (h *ListsHttpHandler) AddGoodsToList(c *gin.Context) {
-	var request entity.AddToListRequest
+	var request entity.AddGoodsListRequest
 	if err := c.BindJSON(&request); err != nil {
 		c.AbortWithStatus(http.StatusBadRequest)
 		return
@@ -109,7 +109,7 @@ func (h *ListsHttpHandler) AddGoodsToList(c *gin.Context) {
 }
 
 func (h *ListsHttpHandler) AddDishToList(c *gin.Context) {
-	var request entity.AddToListRequest
+	var request entity.AddDishListRequest
 	if err := c.BindJSON(&request); err != nil {
 		c.AbortWithStatus(http.StatusBadRequest)
 		return

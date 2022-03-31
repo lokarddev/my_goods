@@ -37,6 +37,6 @@ func (s *ListService) AddGoodsToList(listId int32, goods map[int32]int32) error 
 	return s.repo.AddGoodsToList(listId, goods)
 }
 
-func (s *ListService) AddDishToLIst(listId int32, dishes map[int32]int32) error {
+func (s *ListService) AddDishToLIst(listId int32, dishes []int32) error {
 	return s.repo.AddDishToList(listId, dishes)
 }

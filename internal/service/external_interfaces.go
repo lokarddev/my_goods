@@ -9,7 +9,7 @@ type ListRepo interface {
 	UpdateList(list *entity.List, id int32) (*entity.ListsResponse, error)
 	DeleteList(id int32) error
 	AddGoodsToList(listId int32, goods map[int32]int32) error
-	AddDishToList(listId int32, dishes map[int32]int32) error
+	AddDishToList(listId int32, dishes []int32) error
 }
 
 type GoodsRepo interface {
