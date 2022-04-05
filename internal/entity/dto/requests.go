@@ -1,4 +1,4 @@
-package entity
+package dto
 
 type AddGoodsListRequest struct {
 	ListId int32           `json:"list_id"`
@@ -18,4 +18,9 @@ type AddToDishRequest struct {
 type RemoveFromDishRequest struct {
 	DishId int32   `json:"dish_id"`
 	Ids    []int32 `json:"ids"`
+}
+
+type LoginRequest struct {
+	Name     string `json:"name"`
+	Password string `json:"password"`
 }

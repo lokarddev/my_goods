@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/jackc/pgx/v4"
 	"my_goods/internal/entity"
+	"my_goods/internal/entity/dto"
 	"my_goods/internal/storage/postgres"
 	"my_goods/pkg/logger"
 	"sync"
@@ -21,12 +22,12 @@ func NewListRepository(db postgres.PgxPoolInterface) *ListRepository {
 	}}
 }
 
-func (r *ListRepository) GetList(id int32) (*entity.ListsResponse, error) {
+func (r *ListRepository) GetList(id int32) (*dto.ListsResponse, error) {
 	var err error
 
 	list := &entity.List{}
-	goods := &[]entity.GoodsWithAmount{}
-	dishes := &[]entity.DishesResponse{}
+	goods := &[]dto.GoodsWithAmount{}
+	dishes := &[]dto.DishesResponse{}
 
 	wg := &sync.WaitGroup{}
 	wg.Add(3)
@@ -47,7 +48,7 @@ func (r *ListRepository) GetList(id int32) (*entity.ListsResponse, error) {
 	}(wg, id)
 
 	wg.Wait()
-	return &entity.ListsResponse{
+	return &dto.ListsResponse{
 		List:   *list,
 		Dishes: *dishes,
 		Goods:  *goods,
@@ -70,8 +71,8 @@ func (r *ListRepository) getListInfo(id int32) (*entity.List, error) {
 	return list.ToClean(), err
 }
 
-func (r *ListRepository) getDishesInfo(id int32) (*[]entity.DishesResponse, error) {
-	var dishes []entity.DishesResponse
+func (r *ListRepository) getDishesInfo(id int32) (*[]dto.DishesResponse, error) {
+	var dishes []dto.DishesResponse
 	var ids []int32
 	query := fmt.Sprintf("SELECT dish_id FROM %s WHERE list_id=$1", postgres.ListToDishes)
 	rows, err := r.DB.Query(r.Ctx, query, id)
@@ -86,7 +87,7 @@ func (r *ListRepository) getDishesInfo(id int32) (*[]entity.DishesResponse, erro
 
 	for _, v := range ids {
 		dish := &entity.Dish{}
-		goods := &[]entity.GoodsWithAmount{}
+		goods := &[]dto.GoodsWithAmount{}
 		wg := &sync.WaitGroup{}
 		wg.Add(2)
 		go func(wg *sync.WaitGroup, id int32) {
@@ -99,21 +100,21 @@ func (r *ListRepository) getDishesInfo(id int32) (*[]entity.DishesResponse, erro
 			wg.Done()
 		}(wg, v)
 		wg.Wait()
-		dishes = append(dishes, entity.DishesResponse{Dish: *dish, Goods: *goods})
+		dishes = append(dishes, dto.DishesResponse{Dish: *dish, Goods: *goods})
 	}
 
 	return &dishes, err
 }
 
-func (r *ListRepository) getGoodsInfo(id int32) (*[]entity.GoodsWithAmount, error) {
-	var goods []entity.GoodsWithAmount
+func (r *ListRepository) getGoodsInfo(id int32) (*[]dto.GoodsWithAmount, error) {
+	var goods []dto.GoodsWithAmount
 	query := fmt.Sprintf("select goods.id, goods.title, goods.description, list_goods.amount from %s "+
 		"full join %s on goods.id=list_goods.goods_id where list_goods.list_id=$1",
 		postgres.ListToGoods, postgres.GoodsTable)
 	rows, err := r.DB.Query(r.Ctx, query, id)
 	defer rows.Close()
 	for rows.Next() {
-		good := entity.GoodsWithAmount{}
+		good := dto.GoodsWithAmount{}
 		if err = rows.Scan(&good.Id, &good.Title, &good.Description, &good.Amount); err != nil {
 			logger.Error(err)
 		}
@@ -122,8 +123,8 @@ func (r *ListRepository) getGoodsInfo(id int32) (*[]entity.GoodsWithAmount, erro
 	return &goods, err
 }
 
-func (r *ListRepository) GetAllLists() (*[]entity.ListsResponse, error) {
-	var response []entity.ListsResponse
+func (r *ListRepository) GetAllLists() (*[]dto.ListsResponse, error) {
+	var response []dto.ListsResponse
 	var lists []entity.List
 
 	query := fmt.Sprintf("SELECT id, title, description FROM %s", postgres.ListsTable)
@@ -169,7 +170,7 @@ func (r *ListRepository) CreateList(list *entity.List) (*entity.List, error) {
 	return pgxList.ToClean(), err
 }
 
-func (r *ListRepository) UpdateList(list *entity.List, id int32) (*entity.ListsResponse, error) {
+func (r *ListRepository) UpdateList(list *entity.List, id int32) (*dto.ListsResponse, error) {
 	var pgxList entity.PgxList
 	query := fmt.Sprintf("UPDATE %s SET updated_at=now(), title=$1, description=$2 WHERE id=$3 RETURNING id, title, description", postgres.ListsTable)
 	err := r.DB.BeginTxFunc(r.Ctx, pgx.TxOptions{}, func(tx pgx.Tx) error {
@@ -185,7 +186,7 @@ func (r *ListRepository) UpdateList(list *entity.List, id int32) (*entity.ListsR
 	if err != nil {
 		logger.Error(err)
 	}
-	return &entity.ListsResponse{List: *pgxList.ToClean()}, err
+	return &dto.ListsResponse{List: *pgxList.ToClean()}, err
 }
 
 func (r *ListRepository) DeleteList(id int32) error {

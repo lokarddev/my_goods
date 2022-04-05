@@ -1,12 +1,15 @@
 package service
 
-import "my_goods/internal/entity"
+import (
+	"my_goods/internal/entity"
+	"my_goods/internal/entity/dto"
+)
 
 type ListRepo interface {
-	GetList(id int32) (*entity.ListsResponse, error)
-	GetAllLists() (*[]entity.ListsResponse, error)
+	GetList(id int32) (*dto.ListsResponse, error)
+	GetAllLists() (*[]dto.ListsResponse, error)
 	CreateList(list *entity.List) (*entity.List, error)
-	UpdateList(list *entity.List, id int32) (*entity.ListsResponse, error)
+	UpdateList(list *entity.List, id int32) (*dto.ListsResponse, error)
 	DeleteList(id int32) error
 	AddGoodsToList(listId int32, goods map[int32]int32) error
 	AddDishToList(listId int32, dishes []int32) error
@@ -21,10 +24,10 @@ type GoodsRepo interface {
 }
 
 type DishRepo interface {
-	GetAllDishes() (*[]entity.DishesResponse, error)
-	GetDish(id int32) (*entity.DishesResponse, error)
+	GetAllDishes() (*[]dto.DishesResponse, error)
+	GetDish(id int32) (*dto.DishesResponse, error)
 	CreateDish(dish *entity.Dish) (*entity.Dish, error)
-	UpdateDish(dish *entity.Dish, id int32) (*entity.DishesResponse, error)
+	UpdateDish(dish *entity.Dish, id int32) (*dto.DishesResponse, error)
 	DeleteDish(id int32) error
 	AddGoodsToDish(dishId int32, goods map[int32]int32) error
 	RemoveGoodsFromDish(dishId int32, goodsIds []int32) error

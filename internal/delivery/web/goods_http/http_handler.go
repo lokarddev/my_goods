@@ -17,11 +17,11 @@ func NewGoodsHttpHandler(service delivery.GoodsServiceInterface) *GoodsHttpHandl
 }
 
 func (h *GoodsHttpHandler) RegisterRoutes(api *gin.RouterGroup) {
-	api.GET("get_goods/:goods_id", h.GetGoods)
-	api.GET("get_goods/", h.GetAllGoods)
-	api.POST("create_goods/", h.CreateGoods)
-	api.POST("update_goods/:goods_id", h.UpdateGoods)
-	api.DELETE("delete_goods/:goods_id", h.DeleteGoods)
+	api.GET("get-goods/:goods_id", h.GetGoods)
+	api.GET("get-goods/", h.GetAllGoods)
+	api.POST("create-goods/", h.CreateGoods)
+	api.POST("update-goods/:goods_id", h.UpdateGoods)
+	api.DELETE("delete-goods/:goods_id", h.DeleteGoods)
 }
 
 func (h *GoodsHttpHandler) GetGoods(c *gin.Context) {

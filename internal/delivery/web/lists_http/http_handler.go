@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"my_goods/internal/delivery"
 	"my_goods/internal/entity"
+	"my_goods/internal/entity/dto"
 	"net/http"
 	"strconv"
 )
@@ -17,13 +18,13 @@ func NewListsHttpHandler(service delivery.ListServiceInterface) *ListsHttpHandle
 }
 
 func (h *ListsHttpHandler) RegisterRoutes(api *gin.RouterGroup) {
-	api.GET("get_lists/:lists_id", h.GetLists)
-	api.GET("get_lists/", h.GetAllLists)
-	api.POST("create_lists/", h.CreateLists)
-	api.POST("update_lists/:lists_id", h.UpdateLists)
-	api.DELETE("delete_lists/:lists_id", h.DeleteLists)
-	api.POST("add_goods_to_list/", h.AddGoodsToList)
-	api.POST("add_dish_to_list/", h.AddDishToList)
+	api.GET("get-lists/:lists_id", h.GetLists)
+	api.GET("get-lists/", h.GetAllLists)
+	api.POST("create-lists/", h.CreateLists)
+	api.POST("update-lists/:lists_id", h.UpdateLists)
+	api.DELETE("delete-lists/:lists_id", h.DeleteLists)
+	api.POST("add-goods-to-list/", h.AddGoodsToList)
+	api.POST("add-dish-to-list/", h.AddDishToList)
 }
 
 func (h *ListsHttpHandler) GetLists(c *gin.Context) {
@@ -96,7 +97,7 @@ func (h *ListsHttpHandler) DeleteLists(c *gin.Context) {
 }
 
 func (h *ListsHttpHandler) AddGoodsToList(c *gin.Context) {
-	var request entity.AddGoodsListRequest
+	var request dto.AddGoodsListRequest
 	if err := c.BindJSON(&request); err != nil {
 		c.AbortWithStatus(http.StatusBadRequest)
 		return
@@ -109,7 +110,7 @@ func (h *ListsHttpHandler) AddGoodsToList(c *gin.Context) {
 }
 
 func (h *ListsHttpHandler) AddDishToList(c *gin.Context) {
-	var request entity.AddDishListRequest
+	var request dto.AddDishListRequest
 	if err := c.BindJSON(&request); err != nil {
 		c.AbortWithStatus(http.StatusBadRequest)
 		return

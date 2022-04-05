@@ -2,6 +2,7 @@ package lists_service
 
 import (
 	"my_goods/internal/entity"
+	"my_goods/internal/entity/dto"
 	"my_goods/internal/service"
 )
 
@@ -13,11 +14,11 @@ func NewListService(repo service.ListRepo) *ListService {
 	return &ListService{repo: repo}
 }
 
-func (s *ListService) GetList(id int32) (*entity.ListsResponse, error) {
+func (s *ListService) GetList(id int32) (*dto.ListsResponse, error) {
 	return s.repo.GetList(id)
 }
 
-func (s *ListService) GetAllLists() (*[]entity.ListsResponse, error) {
+func (s *ListService) GetAllLists() (*[]dto.ListsResponse, error) {
 	return s.repo.GetAllLists()
 }
 
@@ -25,7 +26,7 @@ func (s *ListService) CreateList(list *entity.List) (*entity.List, error) {
 	return s.repo.CreateList(list)
 }
 
-func (s *ListService) UpdateList(list *entity.List, id int32) (*entity.ListsResponse, error) {
+func (s *ListService) UpdateList(list *entity.List, id int32) (*dto.ListsResponse, error) {
 	return s.repo.UpdateList(list, id)
 }
 

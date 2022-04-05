@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/jackc/pgx/v4"
 	"my_goods/internal/entity"
+	"my_goods/internal/entity/dto"
 	"my_goods/internal/storage/postgres"
 	"my_goods/pkg/logger"
 	"sync"
@@ -21,10 +22,10 @@ func NewDishRepository(db postgres.PgxPoolInterface) *DishRepository {
 	}}
 }
 
-func (r *DishRepository) GetDish(id int32) (*entity.DishesResponse, error) {
+func (r *DishRepository) GetDish(id int32) (*dto.DishesResponse, error) {
 	var err error
 	dish := &entity.Dish{}
-	goods := &[]entity.GoodsWithAmount{}
+	goods := &[]dto.GoodsWithAmount{}
 	wg := &sync.WaitGroup{}
 	wg.Add(2)
 	go func(wg *sync.WaitGroup, id int32) {
@@ -38,12 +39,12 @@ func (r *DishRepository) GetDish(id int32) (*entity.DishesResponse, error) {
 	}(wg, id)
 
 	wg.Wait()
-	return &entity.DishesResponse{Dish: *dish, Goods: *goods}, err
+	return &dto.DishesResponse{Dish: *dish, Goods: *goods}, err
 }
 
-func (r *DishRepository) GetAllDishes() (*[]entity.DishesResponse, error) {
+func (r *DishRepository) GetAllDishes() (*[]dto.DishesResponse, error) {
 	var dishes []entity.Dish
-	var response []entity.DishesResponse
+	var response []dto.DishesResponse
 	query := fmt.Sprintf("SELECT id, title, description FROM %s", postgres.DishTable)
 	rows, err := r.DB.Query(r.Ctx, query)
 	defer rows.Close()
@@ -63,7 +64,7 @@ func (r *DishRepository) GetAllDishes() (*[]entity.DishesResponse, error) {
 			logger.Error(err)
 			return &response, err
 		}
-		response = append(response, entity.DishesResponse{
+		response = append(response, dto.DishesResponse{
 			Dish:  dish,
 			Goods: *goods,
 		})
@@ -90,7 +91,7 @@ func (r *DishRepository) CreateDish(dish *entity.Dish) (*entity.Dish, error) {
 	return pgxDish.ToClean(), err
 }
 
-func (r *DishRepository) UpdateDish(dish *entity.Dish, id int32) (*entity.DishesResponse, error) {
+func (r *DishRepository) UpdateDish(dish *entity.Dish, id int32) (*dto.DishesResponse, error) {
 	var pgxDish entity.PgxDish
 	query := fmt.Sprintf("UPDATE %s SET updated_at=now(), title=$1, description=$2 WHERE id=$3 RETURNING id, title, description", postgres.DishTable)
 	err := r.DB.BeginTxFunc(r.Ctx, pgx.TxOptions{}, func(tx pgx.Tx) error {
@@ -107,7 +108,7 @@ func (r *DishRepository) UpdateDish(dish *entity.Dish, id int32) (*entity.Dishes
 		logger.Error(err)
 	}
 	goods, err := r.GetBaseGoodsInfo(id)
-	return &entity.DishesResponse{
+	return &dto.DishesResponse{
 		Dish:  *pgxDish.ToClean(),
 		Goods: *goods,
 	}, err

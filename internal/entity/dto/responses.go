@@ -1,17 +1,19 @@
-package entity
+package dto
+
+import "my_goods/internal/entity"
 
 type DishesResponse struct {
-	Dish  Dish
+	Dish  entity.Dish
 	Goods []GoodsWithAmount
 }
 
 type ListsResponse struct {
-	List   List
+	List   entity.List
 	Dishes []DishesResponse
 	Goods  []GoodsWithAmount
 }
 
 type GoodsWithAmount struct {
-	Goods
+	entity.Goods
 	Amount int32 `json:"amount" db:"amount"`
 }

@@ -20,6 +20,8 @@ var (
 	DbName   string
 	DbSsl    string
 	DbSchema string
+
+	JWTSign string
 )
 
 func InitEnvVariables() error {
@@ -41,6 +43,8 @@ func InitEnvVariables() error {
 	DbName = os.Getenv("DB_NAME")
 	DbSsl = os.Getenv("SSL_MODE")
 	DbSchema = os.Getenv("DB_SCHEMA")
+
+	JWTSign = os.Getenv("JWT_SIGN")
 
 	AutoMigrate, _ = strconv.ParseBool(os.Getenv("AUTO_MIGRATE"))
 	return err

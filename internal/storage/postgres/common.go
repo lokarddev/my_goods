@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"my_goods/internal/entity"
+	"my_goods/internal/entity/dto"
 	"my_goods/pkg/logger"
 )
 
@@ -21,14 +22,14 @@ type Repository struct {
 	Ctx context.Context
 }
 
-func (r *Repository) GetBaseGoodsInfo(id int32) (*[]entity.GoodsWithAmount, error) {
-	var goods []entity.GoodsWithAmount
+func (r *Repository) GetBaseGoodsInfo(id int32) (*[]dto.GoodsWithAmount, error) {
+	var goods []dto.GoodsWithAmount
 	query := fmt.Sprintf("SELECT goods.Id, goods.title, goods.description, dish_goods.amount FROM %s "+
 		"FULL JOIN %s ON dish_goods.goods_id = goods.id WHERE dish_id=$1", DishGoodsTable, GoodsTable)
 	rows, err := r.DB.Query(r.Ctx, query, id)
 	defer rows.Close()
 	for rows.Next() {
-		goodInfo := entity.GoodsWithAmount{}
+		goodInfo := dto.GoodsWithAmount{}
 		if err = rows.Scan(&goodInfo.Id, &goodInfo.Title, &goodInfo.Description, &goodInfo.Amount); err != nil {
 			logger.Error(err)
 		}

@@ -2,6 +2,7 @@ package dish_service
 
 import (
 	"my_goods/internal/entity"
+	"my_goods/internal/entity/dto"
 	"my_goods/internal/service"
 )
 
@@ -13,11 +14,11 @@ func NewDishService(repo service.DishRepo) *DishService {
 	return &DishService{repo: repo}
 }
 
-func (s *DishService) GetDish(id int32) (*entity.DishesResponse, error) {
+func (s *DishService) GetDish(id int32) (*dto.DishesResponse, error) {
 	return s.repo.GetDish(id)
 }
 
-func (s *DishService) GetAllDishes() (*[]entity.DishesResponse, error) {
+func (s *DishService) GetAllDishes() (*[]dto.DishesResponse, error) {
 	return s.repo.GetAllDishes()
 }
 
@@ -25,7 +26,7 @@ func (s *DishService) CreateDish(dish *entity.Dish) (*entity.Dish, error) {
 	return s.repo.CreateDish(dish)
 }
 
-func (s *DishService) UpdateDish(dish *entity.Dish, id int32) (*entity.DishesResponse, error) {
+func (s *DishService) UpdateDish(dish *entity.Dish, id int32) (*dto.DishesResponse, error) {
 	return s.repo.UpdateDish(dish, id)
 }
 
