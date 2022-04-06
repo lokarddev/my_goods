@@ -66,7 +66,7 @@ func (r *UsersRepository) CreateSession(userId int32, refresh string) (entity.Se
 		return *session.ToClean(), err
 	}
 
-	query := fmt.Sprintf("INSERT INTO %s (user_id, refresh_token, exipres_in) VALUES ($1, $2, $3) "+
+	query := fmt.Sprintf("INSERT INTO %s (user_id, refresh_token, expires_in) VALUES ($1, $2, $3) "+
 		"RETURNING id, user_id, refresh_token, expires_in", postgres.Session)
 	err := r.DB.BeginTxFunc(r.Ctx, pgx.TxOptions{}, func(tx pgx.Tx) error {
 		rows, err := r.DB.Query(r.Ctx, query, userId, refresh, expiresIn)

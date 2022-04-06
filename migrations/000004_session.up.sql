@@ -8,4 +8,3 @@ create table refresh_session (
   ip varchar(15),
   expires_in bigint
 );
-

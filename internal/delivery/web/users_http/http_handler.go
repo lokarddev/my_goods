@@ -62,7 +62,7 @@ func (h *UsersHttpHandler) RefreshAccessToken(c *gin.Context) {
 	}
 	newAccess, err := h.service.RefreshAccess(token)
 	if err != nil {
-		c.AbortWithStatus(http.StatusInternalServerError)
+		c.AbortWithStatus(http.StatusBadRequest)
 		return
 	}
 	c.JSON(http.StatusOK, newAccess)

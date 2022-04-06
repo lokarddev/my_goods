@@ -9,7 +9,7 @@ type PgxSession struct {
 	Id           pgtype.Int4        `json:"id" db:"id"`
 	UserId       pgtype.Int4        `json:"user_id" db:"user_id"`
 	CreatedAt    pgtype.Timestamptz `json:"created_at" db:"created_at"`
-	RefreshToken pgtype.Varchar     `json:"refresh_token" db:"refresh_token"`
+	RefreshToken pgtype.UUID        `json:"refresh_token" db:"refresh_token"`
 	UserAgent    pgtype.Varchar     `json:"user_agent" db:"user_agent"`
 	Fingerprint  pgtype.Varchar     `json:"fingerprint" db:"fingerprint"`
 	Ip           pgtype.Varchar     `json:"ip" db:"ip"`
@@ -17,11 +17,14 @@ type PgxSession struct {
 }
 
 func (m *PgxSession) ToClean() *Session {
+	var refresh string
+	_ = m.RefreshToken.AssignTo(&refresh)
+
 	return &Session{
 		Id:           m.Id.Int,
 		UserId:       m.UserId.Int,
 		CreatedAt:    m.CreatedAt.Time,
-		RefreshToken: m.RefreshToken.String,
+		RefreshToken: refresh,
 		UserAgent:    m.UserAgent.String,
 		Fingerprint:  m.Fingerprint.String,
 		Ip:           m.Ip.String,
