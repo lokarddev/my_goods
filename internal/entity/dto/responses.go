@@ -19,7 +19,6 @@ type GoodsWithAmount struct {
 }
 
 type Access struct {
-	Access    string
-	ExpiresIn int64
-	Refresh   string
+	Access  string
+	Refresh string
 }

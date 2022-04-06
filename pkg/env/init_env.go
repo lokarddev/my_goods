@@ -21,7 +21,9 @@ var (
 	DbSsl    string
 	DbSchema string
 
-	JWTSign string
+	JWTSign       string
+	JWTExpiration int
+	RefreshTTL    int
 )
 
 func InitEnvVariables() error {
@@ -45,6 +47,8 @@ func InitEnvVariables() error {
 	DbSchema = os.Getenv("DB_SCHEMA")
 
 	JWTSign = os.Getenv("JWT_SIGN")
+	JWTExpiration, _ = strconv.Atoi(os.Getenv("JWT_TTL"))
+	RefreshTTL, _ = strconv.Atoi(os.Getenv("REFRESH_TTL"))
 
 	AutoMigrate, _ = strconv.ParseBool(os.Getenv("AUTO_MIGRATE"))
 	return err

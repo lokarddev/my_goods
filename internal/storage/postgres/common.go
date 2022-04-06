@@ -15,6 +15,8 @@ const (
 	ListsTable     = "lists"
 	ListToDishes   = "list_dishes"
 	ListToGoods    = "list_goods"
+	Session        = "refresh_session"
+	Users          = "users"
 )
 
 type Repository struct {

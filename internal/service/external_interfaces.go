@@ -32,3 +32,17 @@ type DishRepo interface {
 	AddGoodsToDish(dishId int32, goods map[int32]int32) error
 	RemoveGoodsFromDish(dishId int32, goodsIds []int32) error
 }
+
+type UsersRepo interface {
+	GetUserByName(userName string) (entity.User, bool)
+	CreateUser(input dto.LoginRequest) (entity.User, error)
+	CreateSession(userId int32, refresh string) (entity.Session, error)
+	GetSession(token string) (entity.Session, error)
+}
+
+// AuthenticationManager provides logic for JWT & Refresh tokens generation and parsing.
+type AuthenticationManager interface {
+	NewAccess(userId int32) (string, error)
+	Parse(accessToken string) (string, error)
+	NewRefreshToken() string
+}

@@ -10,29 +10,24 @@ import (
 	"github.com/dgrijalva/jwt-go"
 )
 
-// AuthenticationManager provides logic for JWT & Refresh tokens generation and parsing.
-type AuthenticationManager interface {
-	NewAccess(userId string, ttl time.Duration) (string, error)
-	Parse(accessToken string) (string, error)
-	NewRefreshToken() (string, error)
-}
-
 type TokenManager struct {
 	signingKey string
+	ttl        time.Duration
 }
 
 func NewTokenManager() (*TokenManager, error) {
 	signingKey := env.JWTSign
+	ttl := time.Duration(env.JWTExpiration) * time.Minute
 	if signingKey == "" {
 		return nil, errors.New("empty signing key")
 	}
-	return &TokenManager{signingKey: signingKey}, nil
+	return &TokenManager{signingKey: signingKey, ttl: ttl * time.Minute}, nil
 }
 
-func (m *TokenManager) NewAccess(userId string, ttl time.Duration) (string, error) {
+func (m *TokenManager) NewAccess(userId int32) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.StandardClaims{
-		ExpiresAt: time.Now().Add(ttl).Unix(),
-		Subject:   userId,
+		ExpiresAt: time.Now().Add(m.ttl).Unix(),
+		Subject:   string(userId),
 	})
 
 	return token.SignedString([]byte(m.signingKey))
@@ -58,7 +53,7 @@ func (m *TokenManager) Parse(accessToken string) (string, error) {
 	return claims["sub"].(string), nil
 }
 
-func (m *TokenManager) NewRefreshToken() (string, error) {
+func (m *TokenManager) NewRefreshToken() string {
 	u, _ := uuid.NewUUID()
-	return u.String(), nil
+	return u.String()
 }

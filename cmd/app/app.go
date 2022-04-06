@@ -9,12 +9,15 @@ import (
 	"my_goods/internal/delivery/web/dish_http"
 	"my_goods/internal/delivery/web/goods_http"
 	"my_goods/internal/delivery/web/lists_http"
+	"my_goods/internal/delivery/web/users_http"
 	"my_goods/internal/service/dish_service"
 	"my_goods/internal/service/goods_service"
 	"my_goods/internal/service/lists_service"
+	"my_goods/internal/service/users_service"
 	"my_goods/internal/storage/postgres/dish_repository"
 	"my_goods/internal/storage/postgres/goods_repository"
 	"my_goods/internal/storage/postgres/lists_repository"
+	"my_goods/internal/storage/postgres/users_repository"
 	"my_goods/pkg/database"
 	"my_goods/pkg/env"
 )
@@ -45,7 +48,10 @@ func (a *App) Run() {
 }
 
 func (a *App) InitApp() {
+	root := a.server.Router.Group("/")
 	api := a.server.Router.Group("api/", auth.AuthenticationMiddleware)
+
+	a.initUsers(a.dbPool, root)
 	a.initLists(a.dbPool, api)
 	a.initGoods(a.dbPool, api)
 	a.initDish(a.dbPool, api)
@@ -69,5 +75,12 @@ func (a *App) initLists(db *pgxpool.Pool, api *gin.RouterGroup) {
 	repo := lists_repository.NewListRepository(db)
 	service := lists_service.NewListService(repo)
 	httpHandler := lists_http.NewListsHttpHandler(service)
+	httpHandler.RegisterRoutes(api)
+}
+
+func (a *App) initUsers(db *pgxpool.Pool, api *gin.RouterGroup) {
+	repo := users_repository.NewUsersRepository(db)
+	service := users_service.NewUsersService(repo)
+	httpHandler := users_http.NewUsersHttpHandler(service)
 	httpHandler.RegisterRoutes(api)
 }
