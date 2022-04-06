@@ -17,3 +17,9 @@ type GoodsWithAmount struct {
 	entity.Goods
 	Amount int32 `json:"amount" db:"amount"`
 }
+
+type Access struct {
+	Access    string
+	ExpiresIn int64
+	Refresh   string
+}

@@ -32,3 +32,9 @@ type ListServiceInterface interface {
 	AddGoodsToList(listId int32, goods map[int32]int32) error
 	AddDishToLIst(listId int32, dishes []int32) error
 }
+
+type UserServiceInterface interface {
+	SignIn(input dto.LoginRequest) (dto.Access, error)
+	SignUp(input dto.LoginRequest) (dto.Access, error)
+	RefreshAccess(token string) (dto.Access, error)
+}
