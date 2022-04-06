@@ -21,7 +21,7 @@ func NewTokenManager() (*TokenManager, error) {
 	if signingKey == "" {
 		return nil, errors.New("empty signing key")
 	}
-	return &TokenManager{signingKey: signingKey, ttl: ttl * time.Minute}, nil
+	return &TokenManager{signingKey: signingKey, ttl: ttl}, nil
 }
 
 func (m *TokenManager) NewAccess(userId int32) (string, error) {
