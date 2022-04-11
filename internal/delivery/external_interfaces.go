@@ -31,6 +31,7 @@ type ListServiceInterface interface {
 	DeleteList(id int32) error
 	AddGoodsToList(listId int32, goods map[int32]int32) error
 	AddDishToLIst(listId int32, dishes []int32) error
+	GetShopping(listId int32) (map[string]int32, error)
 }
 
 type UserServiceInterface interface {

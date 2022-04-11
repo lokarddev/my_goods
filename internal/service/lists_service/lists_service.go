@@ -41,3 +41,20 @@ func (s *ListService) AddGoodsToList(listId int32, goods map[int32]int32) error 
 func (s *ListService) AddDishToLIst(listId int32, dishes []int32) error {
 	return s.repo.AddDishToList(listId, dishes)
 }
+
+func (s *ListService) GetShopping(listId int32) (map[string]int32, error) {
+	result := make(map[string]int32)
+	list, err := s.GetList(listId)
+	if err != nil {
+		return result, err
+	}
+	for _, good := range list.Goods {
+		result[good.Title] += good.Amount
+	}
+	for _, dish := range list.Dishes {
+		for _, good := range dish.Goods {
+			result[good.Title] += good.Amount
+		}
+	}
+	return result, err
+}

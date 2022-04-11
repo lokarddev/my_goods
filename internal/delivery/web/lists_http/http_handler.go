@@ -25,6 +25,7 @@ func (h *ListsHttpHandler) RegisterRoutes(api *gin.RouterGroup) {
 	api.DELETE("delete-lists/:lists_id", h.DeleteLists)
 	api.POST("add-goods-to-list/", h.AddGoodsToList)
 	api.POST("add-dish-to-list/", h.AddDishToList)
+	api.GET("get-shopping-list/:lists_id", h.getShoppingList)
 }
 
 func (h *ListsHttpHandler) GetLists(c *gin.Context) {
@@ -120,4 +121,18 @@ func (h *ListsHttpHandler) AddDishToList(c *gin.Context) {
 		return
 	}
 	c.Status(http.StatusOK)
+}
+
+func (h *ListsHttpHandler) getShoppingList(c *gin.Context) {
+	id, err := strconv.Atoi(c.Param("lists_id"))
+	if err != nil {
+		c.AbortWithStatus(http.StatusBadRequest)
+		return
+	}
+	list, err := h.service.GetShopping(int32(id))
+	if err != nil {
+		c.AbortWithStatus(http.StatusInternalServerError)
+		return
+	}
+	c.JSON(http.StatusOK, list)
 }

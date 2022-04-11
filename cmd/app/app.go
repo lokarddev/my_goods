@@ -4,7 +4,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgx/v4/pgxpool"
 	"log"
-	"my_goods/internal/auth"
 	"my_goods/internal/delivery/web"
 	"my_goods/internal/delivery/web/dish_http"
 	"my_goods/internal/delivery/web/goods_http"
@@ -49,7 +48,7 @@ func (a *App) Run() {
 
 func (a *App) InitApp() {
 	root := a.server.Router.Group("/")
-	api := a.server.Router.Group("api/", auth.AuthenticationMiddleware)
+	api := a.server.Router.Group("api/")
 
 	a.initUsers(a.dbPool, root)
 	a.initLists(a.dbPool, api)
