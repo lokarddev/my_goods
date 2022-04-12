@@ -2,6 +2,7 @@ package goods_http
 
 import (
 	"github.com/gin-gonic/gin"
+	"my_goods/internal/auth"
 	"my_goods/internal/delivery"
 	"my_goods/internal/entity"
 	"net/http"
@@ -25,12 +26,13 @@ func (h *GoodsHttpHandler) RegisterRoutes(api *gin.RouterGroup) {
 }
 
 func (h *GoodsHttpHandler) GetGoods(c *gin.Context) {
+	userId := auth.GetUserId(c)
 	id, err := strconv.Atoi(c.Param("goods_id"))
 	if err != nil {
 		c.AbortWithStatus(http.StatusBadRequest)
 		return
 	}
-	goods, err := h.service.GetGoods(int32(id))
+	goods, err := h.service.GetGoods(int32(id), userId)
 	if err != nil {
 		c.AbortWithStatus(http.StatusInternalServerError)
 		return
@@ -39,7 +41,8 @@ func (h *GoodsHttpHandler) GetGoods(c *gin.Context) {
 }
 
 func (h *GoodsHttpHandler) GetAllGoods(c *gin.Context) {
-	dishes, err := h.service.GetAllGoods()
+	userId := auth.GetUserId(c)
+	dishes, err := h.service.GetAllGoods(userId)
 	if err != nil {
 		c.AbortWithStatus(http.StatusInternalServerError)
 		return
@@ -62,6 +65,7 @@ func (h *GoodsHttpHandler) CreateGoods(c *gin.Context) {
 }
 
 func (h *GoodsHttpHandler) UpdateGoods(c *gin.Context) {
+	userId := auth.GetUserId(c)
 	id, err := strconv.Atoi(c.Param("goods_id"))
 	if err != nil {
 		c.AbortWithStatus(http.StatusBadRequest)
@@ -72,7 +76,7 @@ func (h *GoodsHttpHandler) UpdateGoods(c *gin.Context) {
 		c.AbortWithStatus(http.StatusBadRequest)
 		return
 	}
-	res, err := h.service.UpdateGoods(&goods, int32(id))
+	res, err := h.service.UpdateGoods(&goods, int32(id), userId)
 	if err != nil {
 		c.AbortWithStatus(http.StatusInternalServerError)
 		return
@@ -81,12 +85,13 @@ func (h *GoodsHttpHandler) UpdateGoods(c *gin.Context) {
 }
 
 func (h *GoodsHttpHandler) DeleteGoods(c *gin.Context) {
+	userId := auth.GetUserId(c)
 	id, err := strconv.Atoi(c.Param("goods_id"))
 	if err != nil {
 		c.AbortWithStatus(http.StatusBadRequest)
 		return
 	}
-	if err = h.service.DeleteGoods(int32(id)); err != nil {
+	if err = h.service.DeleteGoods(int32(id), userId); err != nil {
 		c.AbortWithStatus(http.StatusInternalServerError)
 		return
 	}

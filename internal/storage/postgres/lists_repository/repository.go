@@ -22,7 +22,7 @@ func NewListRepository(db postgres.PgxPoolInterface) *ListRepository {
 	}}
 }
 
-func (r *ListRepository) GetList(id int32) (*dto.ListsResponse, error) {
+func (r *ListRepository) GetList(listId, userId int32) (*dto.ListsResponse, error) {
 	var err error
 
 	list := &entity.List{}
@@ -33,19 +33,19 @@ func (r *ListRepository) GetList(id int32) (*dto.ListsResponse, error) {
 	wg.Add(3)
 
 	go func(wg *sync.WaitGroup, id int32) {
-		list, err = r.getListInfo(id)
+		list, err = r.getListInfo(listId, userId)
 		wg.Done()
-	}(wg, id)
+	}(wg, listId)
 
 	go func(wg *sync.WaitGroup, id int32) {
-		dishes, err = r.getDishesInfo(id)
+		dishes, err = r.getDishesInfo(listId, userId)
 		wg.Done()
-	}(wg, id)
+	}(wg, listId)
 
 	go func(wg *sync.WaitGroup, id int32) {
-		goods, err = r.getGoodsInfo(id)
+		goods, err = r.getGoodsInfo(listId, userId)
 		wg.Done()
-	}(wg, id)
+	}(wg, listId)
 
 	wg.Wait()
 	return &dto.ListsResponse{
@@ -55,10 +55,10 @@ func (r *ListRepository) GetList(id int32) (*dto.ListsResponse, error) {
 	}, err
 }
 
-func (r *ListRepository) getListInfo(id int32) (*entity.List, error) {
+func (r *ListRepository) getListInfo(listId, userId int32) (*entity.List, error) {
 	var list entity.PgxList
-	query := fmt.Sprintf("SELECT id, title, description FROM %s WHERE id=$1", postgres.ListsTable)
-	rows, err := r.DB.Query(r.Ctx, query, id)
+	query := fmt.Sprintf("SELECT id, title, description FROM %s WHERE id=$1 AND user_id=$2", postgres.ListsTable)
+	rows, err := r.DB.Query(r.Ctx, query, listId, userId)
 	defer rows.Close()
 	for rows.Next() {
 		if err = rows.Scan(&list.Id, &list.Title, &list.Description); err != nil {
@@ -71,11 +71,11 @@ func (r *ListRepository) getListInfo(id int32) (*entity.List, error) {
 	return list.ToClean(), err
 }
 
-func (r *ListRepository) getDishesInfo(id int32) (*[]dto.DishesResponse, error) {
+func (r *ListRepository) getDishesInfo(listId, userId int32) (*[]dto.DishesResponse, error) {
 	var dishes []dto.DishesResponse
 	var ids []int32
-	query := fmt.Sprintf("SELECT dish_id FROM %s WHERE list_id=$1", postgres.ListToDishes)
-	rows, err := r.DB.Query(r.Ctx, query, id)
+	query := fmt.Sprintf("SELECT dish_id FROM %s WHERE list_id=$1 AND user_id=$2", postgres.ListToDishes)
+	rows, err := r.DB.Query(r.Ctx, query, listId, userId)
 	defer rows.Close()
 	for rows.Next() {
 		var i int32
@@ -91,12 +91,12 @@ func (r *ListRepository) getDishesInfo(id int32) (*[]dto.DishesResponse, error) 
 		wg := &sync.WaitGroup{}
 		wg.Add(2)
 		go func(wg *sync.WaitGroup, id int32) {
-			dish, err = r.GetBaseDishInfo(id)
+			dish, err = r.GetBaseDishInfo(listId, userId)
 			wg.Done()
 		}(wg, v)
 
 		go func(wg *sync.WaitGroup, id int32) {
-			goods, err = r.GetBaseGoodsInfo(id)
+			goods, err = r.GetBaseGoodsInfo(listId, userId)
 			wg.Done()
 		}(wg, v)
 		wg.Wait()
@@ -106,12 +106,12 @@ func (r *ListRepository) getDishesInfo(id int32) (*[]dto.DishesResponse, error) 
 	return &dishes, err
 }
 
-func (r *ListRepository) getGoodsInfo(id int32) (*[]dto.GoodsWithAmount, error) {
+func (r *ListRepository) getGoodsInfo(listId, userId int32) (*[]dto.GoodsWithAmount, error) {
 	var goods []dto.GoodsWithAmount
-	query := fmt.Sprintf("select goods.id, goods.title, goods.description, list_goods.amount from %s "+
-		"full join %s on goods.id=list_goods.goods_id where list_goods.list_id=$1",
+	query := fmt.Sprintf("SELECT goods.id, goods.title, goods.description, list_goods.amount FROM %s "+
+		"FULL JOIN %s ON goods.id=list_goods.goods_id WHERE list_goods.list_id=$1 AND goods.user_id=$2",
 		postgres.ListToGoods, postgres.GoodsTable)
-	rows, err := r.DB.Query(r.Ctx, query, id)
+	rows, err := r.DB.Query(r.Ctx, query, listId, userId)
 	defer rows.Close()
 	for rows.Next() {
 		good := dto.GoodsWithAmount{}
@@ -123,7 +123,7 @@ func (r *ListRepository) getGoodsInfo(id int32) (*[]dto.GoodsWithAmount, error) 
 	return &goods, err
 }
 
-func (r *ListRepository) GetAllLists() (*[]dto.ListsResponse, error) {
+func (r *ListRepository) GetAllLists(userId int32) (*[]dto.ListsResponse, error) {
 	var response []dto.ListsResponse
 	var lists []entity.List
 
@@ -141,7 +141,7 @@ func (r *ListRepository) GetAllLists() (*[]dto.ListsResponse, error) {
 		logger.Error(err)
 	}
 	for _, v := range lists {
-		list, err := r.GetList(v.Id)
+		list, err := r.GetList(v.Id, userId)
 		if err != nil {
 			logger.Error(err)
 		}
@@ -170,11 +170,12 @@ func (r *ListRepository) CreateList(list *entity.List) (*entity.List, error) {
 	return pgxList.ToClean(), err
 }
 
-func (r *ListRepository) UpdateList(list *entity.List, id int32) (*dto.ListsResponse, error) {
+func (r *ListRepository) UpdateList(list *entity.List, listId, userId int32) (*dto.ListsResponse, error) {
 	var pgxList entity.PgxList
-	query := fmt.Sprintf("UPDATE %s SET updated_at=now(), title=$1, description=$2 WHERE id=$3 RETURNING id, title, description", postgres.ListsTable)
+	query := fmt.Sprintf("UPDATE %s SET updated_at=now(), title=$1, description=$2 "+
+		"WHERE id=$3 AND user_id=$4 RETURNING id, title, description", postgres.ListsTable)
 	err := r.DB.BeginTxFunc(r.Ctx, pgx.TxOptions{}, func(tx pgx.Tx) error {
-		rows, err := r.DB.Query(r.Ctx, query, list.Title, list.Description, id)
+		rows, err := r.DB.Query(r.Ctx, query, list.Title, list.Description, listId, userId)
 		defer rows.Close()
 		for rows.Next() {
 			if err = rows.Scan(&pgxList.Id, &pgxList.Title, &pgxList.Description); err != nil {
@@ -189,10 +190,10 @@ func (r *ListRepository) UpdateList(list *entity.List, id int32) (*dto.ListsResp
 	return &dto.ListsResponse{List: *pgxList.ToClean()}, err
 }
 
-func (r *ListRepository) DeleteList(id int32) error {
-	query := fmt.Sprintf("DELETE FROM %s WHERE id=$1", postgres.ListsTable)
+func (r *ListRepository) DeleteList(listId, userId int32) error {
+	query := fmt.Sprintf("DELETE FROM %s WHERE id=$1 AND user_id=$2", postgres.ListsTable)
 	err := r.DB.BeginTxFunc(r.Ctx, pgx.TxOptions{}, func(tx pgx.Tx) error {
-		_, err := r.DB.Exec(r.Ctx, query, id)
+		_, err := r.DB.Exec(r.Ctx, query, listId, userId)
 		return err
 	})
 	if err != nil {

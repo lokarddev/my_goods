@@ -2,6 +2,7 @@ package lists_http
 
 import (
 	"github.com/gin-gonic/gin"
+	"my_goods/internal/auth"
 	"my_goods/internal/delivery"
 	"my_goods/internal/entity"
 	"my_goods/internal/entity/dto"
@@ -29,12 +30,13 @@ func (h *ListsHttpHandler) RegisterRoutes(api *gin.RouterGroup) {
 }
 
 func (h *ListsHttpHandler) GetLists(c *gin.Context) {
+	userId := auth.GetUserId(c)
 	id, err := strconv.Atoi(c.Param("lists_id"))
 	if err != nil {
 		c.AbortWithStatus(http.StatusBadRequest)
 		return
 	}
-	lists, err := h.service.GetList(int32(id))
+	lists, err := h.service.GetList(int32(id), userId)
 	if err != nil {
 		c.AbortWithStatus(http.StatusInternalServerError)
 		return
@@ -43,7 +45,8 @@ func (h *ListsHttpHandler) GetLists(c *gin.Context) {
 }
 
 func (h *ListsHttpHandler) GetAllLists(c *gin.Context) {
-	lists, err := h.service.GetAllLists()
+	userId := auth.GetUserId(c)
+	lists, err := h.service.GetAllLists(userId)
 	if err != nil {
 		c.AbortWithStatus(http.StatusInternalServerError)
 		return
@@ -66,6 +69,7 @@ func (h *ListsHttpHandler) CreateLists(c *gin.Context) {
 }
 
 func (h *ListsHttpHandler) UpdateLists(c *gin.Context) {
+	userId := auth.GetUserId(c)
 	id, err := strconv.Atoi(c.Param("lists_id"))
 	if err != nil {
 		c.AbortWithStatus(http.StatusBadRequest)
@@ -76,7 +80,7 @@ func (h *ListsHttpHandler) UpdateLists(c *gin.Context) {
 		c.AbortWithStatus(http.StatusBadRequest)
 		return
 	}
-	res, err := h.service.UpdateList(&lists, int32(id))
+	res, err := h.service.UpdateList(&lists, int32(id), userId)
 	if err != nil {
 		c.AbortWithStatus(http.StatusInternalServerError)
 		return
@@ -85,12 +89,13 @@ func (h *ListsHttpHandler) UpdateLists(c *gin.Context) {
 }
 
 func (h *ListsHttpHandler) DeleteLists(c *gin.Context) {
+	userId := auth.GetUserId(c)
 	id, err := strconv.Atoi(c.Param("lists_id"))
 	if err != nil {
 		c.AbortWithStatus(http.StatusBadRequest)
 		return
 	}
-	if err = h.service.DeleteList(int32(id)); err != nil {
+	if err = h.service.DeleteList(int32(id), userId); err != nil {
 		c.AbortWithStatus(http.StatusInternalServerError)
 		return
 	}
@@ -124,12 +129,13 @@ func (h *ListsHttpHandler) AddDishToList(c *gin.Context) {
 }
 
 func (h *ListsHttpHandler) getShoppingList(c *gin.Context) {
+	userId := auth.GetUserId(c)
 	id, err := strconv.Atoi(c.Param("lists_id"))
 	if err != nil {
 		c.AbortWithStatus(http.StatusBadRequest)
 		return
 	}
-	list, err := h.service.GetShopping(int32(id))
+	list, err := h.service.GetShopping(int32(id), userId)
 	if err != nil {
 		c.AbortWithStatus(http.StatusInternalServerError)
 		return

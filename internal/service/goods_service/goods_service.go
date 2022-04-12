@@ -13,22 +13,22 @@ func NewGoodsService(repo service.GoodsRepo) *GoodsService {
 	return &GoodsService{repo: repo}
 }
 
-func (s *GoodsService) GetGoods(id int32) (*entity.Goods, error) {
-	return s.repo.GetGoods(id)
+func (s *GoodsService) GetGoods(goodsId, userId int32) (*entity.Goods, error) {
+	return s.repo.GetGoods(goodsId, userId)
 }
 
-func (s *GoodsService) GetAllGoods() (*[]entity.Goods, error) {
-	return s.repo.GetAllGoods()
+func (s *GoodsService) GetAllGoods(userId int32) (*[]entity.Goods, error) {
+	return s.repo.GetAllGoods(userId)
 }
 
 func (s *GoodsService) CreateGoods(good *entity.Goods) (*entity.Goods, error) {
 	return s.repo.CreateGoods(good)
 }
 
-func (s *GoodsService) UpdateGoods(good *entity.Goods, id int32) (*entity.Goods, error) {
-	return s.repo.UpdateGoods(good, id)
+func (s *GoodsService) UpdateGoods(good *entity.Goods, goodsId, userId int32) (*entity.Goods, error) {
+	return s.repo.UpdateGoods(good, goodsId, userId)
 }
 
-func (s *GoodsService) DeleteGoods(id int32) error {
-	return s.repo.DeleteGoods(id)
+func (s *GoodsService) DeleteGoods(goodsId, userId int32) error {
+	return s.repo.DeleteGoods(goodsId, userId)
 }

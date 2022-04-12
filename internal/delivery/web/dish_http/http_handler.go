@@ -2,6 +2,7 @@ package dish_http
 
 import (
 	"github.com/gin-gonic/gin"
+	"my_goods/internal/auth"
 	"my_goods/internal/delivery"
 	"my_goods/internal/entity"
 	"my_goods/internal/entity/dto"
@@ -28,12 +29,13 @@ func (h *DishHttpHandler) RegisterRoutes(api *gin.RouterGroup) {
 }
 
 func (h *DishHttpHandler) GetDish(c *gin.Context) {
-	id, err := strconv.Atoi(c.Param("dish_id"))
+	userId := auth.GetUserId(c)
+	dishId, err := strconv.Atoi(c.Param("dish_id"))
 	if err != nil {
 		c.AbortWithStatus(http.StatusBadRequest)
 		return
 	}
-	dish, err := h.service.GetDish(int32(id))
+	dish, err := h.service.GetDish(int32(dishId), userId)
 	if err != nil {
 		c.AbortWithStatus(http.StatusInternalServerError)
 		return
@@ -42,7 +44,8 @@ func (h *DishHttpHandler) GetDish(c *gin.Context) {
 }
 
 func (h *DishHttpHandler) GetAllDishes(c *gin.Context) {
-	dishes, err := h.service.GetAllDishes()
+	userId := auth.GetUserId(c)
+	dishes, err := h.service.GetAllDishes(userId)
 	if err != nil {
 		c.AbortWithStatus(http.StatusInternalServerError)
 		return
@@ -65,6 +68,7 @@ func (h *DishHttpHandler) CreateDish(c *gin.Context) {
 }
 
 func (h *DishHttpHandler) UpdateDish(c *gin.Context) {
+	userId := auth.GetUserId(c)
 	id, err := strconv.Atoi(c.Param("dish_id"))
 	if err != nil {
 		c.AbortWithStatus(http.StatusBadRequest)
@@ -75,7 +79,7 @@ func (h *DishHttpHandler) UpdateDish(c *gin.Context) {
 		c.AbortWithStatus(http.StatusBadRequest)
 		return
 	}
-	res, err := h.service.UpdateDish(&dish, int32(id))
+	res, err := h.service.UpdateDish(&dish, int32(id), userId)
 	if err != nil {
 		c.AbortWithStatus(http.StatusInternalServerError)
 		return
@@ -84,12 +88,13 @@ func (h *DishHttpHandler) UpdateDish(c *gin.Context) {
 }
 
 func (h *DishHttpHandler) DeleteDish(c *gin.Context) {
+	userId := auth.GetUserId(c)
 	id, err := strconv.Atoi(c.Param("dish_id"))
 	if err != nil {
 		c.AbortWithStatus(http.StatusBadRequest)
 		return
 	}
-	if err = h.service.DeleteDish(int32(id)); err != nil {
+	if err = h.service.DeleteDish(int32(id), userId); err != nil {
 		c.AbortWithStatus(http.StatusInternalServerError)
 		return
 	}

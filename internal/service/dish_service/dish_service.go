@@ -14,24 +14,24 @@ func NewDishService(repo service.DishRepo) *DishService {
 	return &DishService{repo: repo}
 }
 
-func (s *DishService) GetDish(id int32) (*dto.DishesResponse, error) {
-	return s.repo.GetDish(id)
+func (s *DishService) GetDish(dishId, userId int32) (*dto.DishesResponse, error) {
+	return s.repo.GetDish(dishId, userId)
 }
 
-func (s *DishService) GetAllDishes() (*[]dto.DishesResponse, error) {
-	return s.repo.GetAllDishes()
+func (s *DishService) GetAllDishes(userId int32) (*[]dto.DishesResponse, error) {
+	return s.repo.GetAllDishes(userId)
 }
 
 func (s *DishService) CreateDish(dish *entity.Dish) (*entity.Dish, error) {
 	return s.repo.CreateDish(dish)
 }
 
-func (s *DishService) UpdateDish(dish *entity.Dish, id int32) (*dto.DishesResponse, error) {
-	return s.repo.UpdateDish(dish, id)
+func (s *DishService) UpdateDish(dish *entity.Dish, dishId, userId int32) (*dto.DishesResponse, error) {
+	return s.repo.UpdateDish(dish, dishId, userId)
 }
 
-func (s *DishService) DeleteDish(id int32) error {
-	return s.repo.DeleteDish(id)
+func (s *DishService) DeleteDish(dishId, userId int32) error {
+	return s.repo.DeleteDish(dishId, userId)
 }
 
 func (s *DishService) AddGoods(dishId int32, goods map[int32]int32) error {
