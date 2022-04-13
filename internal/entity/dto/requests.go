@@ -24,3 +24,7 @@ type LoginRequest struct {
 	Name     string `json:"name"`
 	Password string `json:"password"`
 }
+
+type RefreshRequest struct {
+	Refresh string `json:"refresh"`
+}

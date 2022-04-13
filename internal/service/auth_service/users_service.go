@@ -1,9 +1,9 @@
-package users_service
+package auth_service
 
 import (
 	"errors"
 	"log"
-	"my_goods/internal/auth"
+	"my_goods/internal/delivery/web/auth"
 	"my_goods/internal/entity/dto"
 	"my_goods/internal/service"
 	"time"

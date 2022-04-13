@@ -1,0 +1,792 @@
+basePath: /
+definitions:
+  dto.Access:
+    properties:
+      access:
+        type: string
+      refresh:
+        type: string
+    type: object
+  dto.AddDishListRequest:
+    properties:
+      ids:
+        items:
+          type: integer
+        type: array
+      list_id:
+        type: integer
+    type: object
+  dto.AddGoodsListRequest:
+    properties:
+      ids:
+        additionalProperties:
+          type: integer
+        type: object
+      list_id:
+        type: integer
+    type: object
+  dto.AddToDishRequest:
+    properties:
+      dish_id:
+        type: integer
+      ids:
+        additionalProperties:
+          type: integer
+        type: object
+    type: object
+  dto.DishesResponse:
+    properties:
+      dish:
+        $ref: '#/definitions/entity.Dish'
+      goods:
+        items:
+          $ref: '#/definitions/dto.GoodsWithAmount'
+        type: array
+    type: object
+  dto.GoodsWithAmount:
+    properties:
+      amount:
+        type: integer
+      created:
+        type: string
+      description:
+        type: string
+      id:
+        type: integer
+      measure_id:
+        type: integer
+      title:
+        type: string
+      updated:
+        type: string
+    type: object
+  dto.ListsResponse:
+    properties:
+      dishes:
+        items:
+          $ref: '#/definitions/dto.DishesResponse'
+        type: array
+      goods:
+        items:
+          $ref: '#/definitions/dto.GoodsWithAmount'
+        type: array
+      list:
+        $ref: '#/definitions/entity.List'
+    type: object
+  dto.LoginRequest:
+    properties:
+      name:
+        type: string
+      password:
+        type: string
+    type: object
+  dto.RefreshRequest:
+    properties:
+      refresh:
+        type: string
+    type: object
+  dto.RemoveFromDishRequest:
+    properties:
+      dish_id:
+        type: integer
+      ids:
+        items:
+          type: integer
+        type: array
+    type: object
+  entity.Dish:
+    properties:
+      created:
+        type: string
+      description:
+        type: string
+      id:
+        type: integer
+      title:
+        type: string
+      updated:
+        type: string
+    type: object
+  entity.Goods:
+    properties:
+      created:
+        type: string
+      description:
+        type: string
+      id:
+        type: integer
+      measure_id:
+        type: integer
+      title:
+        type: string
+      updated:
+        type: string
+    type: object
+  entity.List:
+    properties:
+      created:
+        type: string
+      description:
+        type: string
+      dishes:
+        items:
+          $ref: '#/definitions/entity.Dish'
+        type: array
+      id:
+        type: integer
+      title:
+        type: string
+      updated:
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: Simple shopping list app
+  title: My goods
+  version: "1.0"
+paths:
+  /api/add-dish-to-list/:
+    post:
+      consumes:
+      - application/json
+      description: adding new dish to list
+      operationId: add-dish-to-list
+      parameters:
+      - description: dishes that should be added to list
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/dto.AddDishListRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ""
+        "400":
+          description: ""
+        "500":
+          description: ""
+      security:
+      - ApiKeyAuth: []
+      summary: AddDishToList
+      tags:
+      - lists
+  /api/add-goods-to-dish/:
+    post:
+      consumes:
+      - application/json
+      description: append existing good to existing dish
+      operationId: add-goods-to-dish
+      parameters:
+      - description: goods that should be added to dish
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/dto.AddToDishRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ""
+        "400":
+          description: ""
+        "500":
+          description: ""
+      security:
+      - ApiKeyAuth: []
+      summary: AddGoodsToDish
+      tags:
+      - dishes
+  /api/add-goods-to-list/:
+    post:
+      consumes:
+      - application/json
+      description: goods new dish to list
+      operationId: add-goods-to-list
+      parameters:
+      - description: goods that should be added to list
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/dto.AddGoodsListRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ""
+        "400":
+          description: ""
+        "500":
+          description: ""
+      security:
+      - ApiKeyAuth: []
+      summary: AddGoodsToList
+      tags:
+      - lists
+  /api/create-dish:
+    post:
+      consumes:
+      - application/json
+      description: creating new dish from input
+      operationId: create-dish
+      parameters:
+      - description: entry data for dish
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/entity.Dish'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entity.Dish'
+        "400":
+          description: ""
+        "500":
+          description: ""
+      security:
+      - ApiKeyAuth: []
+      summary: CreateDish
+      tags:
+      - dishes
+  /api/create-goods:
+    post:
+      consumes:
+      - application/json
+      description: creating new goods from input
+      operationId: create-goods
+      parameters:
+      - description: entry data for goods
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/entity.Goods'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entity.Goods'
+        "400":
+          description: ""
+        "500":
+          description: ""
+      security:
+      - ApiKeyAuth: []
+      summary: CreateGoods
+      tags:
+      - goods
+  /api/create-lists:
+    post:
+      consumes:
+      - application/json
+      description: creating new lists from input
+      operationId: create-lists
+      parameters:
+      - description: entry data for lists
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/entity.List'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entity.List'
+        "400":
+          description: ""
+        "500":
+          description: ""
+      security:
+      - ApiKeyAuth: []
+      summary: CreateLists
+      tags:
+      - lists
+  /api/delete-dish/{dish_id}:
+    delete:
+      consumes:
+      - application/json
+      description: deleting existing dish
+      operationId: delete-dish
+      parameters:
+      - description: dish id
+        in: path
+        name: dish_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ""
+        "400":
+          description: ""
+        "500":
+          description: ""
+      security:
+      - ApiKeyAuth: []
+      summary: DeleteDish
+      tags:
+      - dishes
+  /api/delete-goods/{goods_id}:
+    delete:
+      consumes:
+      - application/json
+      description: deleting existing goods
+      operationId: delete-goods
+      parameters:
+      - description: goods id
+        in: path
+        name: goods_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ""
+        "400":
+          description: ""
+        "500":
+          description: ""
+      security:
+      - ApiKeyAuth: []
+      summary: DeleteGoods
+      tags:
+      - goods
+  /api/delete-lists/{lists_id}:
+    delete:
+      consumes:
+      - application/json
+      description: deleting existing lists
+      operationId: delete-lists
+      parameters:
+      - description: lists id
+        in: path
+        name: lists_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ""
+        "400":
+          description: ""
+        "500":
+          description: ""
+      security:
+      - ApiKeyAuth: []
+      summary: DeleteLists
+      tags:
+      - lists
+  /api/get-dish/{dish_id}:
+    get:
+      consumes:
+      - application/json
+      description: getting specific dish dish from user
+      operationId: get-dish
+      parameters:
+      - description: dish id
+        in: path
+        name: dish_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.DishesResponse'
+        "400":
+          description: ""
+        "500":
+          description: ""
+      security:
+      - ApiKeyAuth: []
+      summary: GetDish
+      tags:
+      - dishes
+  /api/get-dishes/:
+    get:
+      consumes:
+      - application/json
+      description: getting all dishes by user
+      operationId: get-all-dishes
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/dto.DishesResponse'
+            type: array
+        "400":
+          description: ""
+        "500":
+          description: ""
+      security:
+      - ApiKeyAuth: []
+      summary: GetAllDishes
+      tags:
+      - dishes
+  /api/get-goods/:
+    get:
+      consumes:
+      - application/json
+      description: getting all goods by user
+      operationId: get-all-goods
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/entity.Goods'
+            type: array
+        "400":
+          description: ""
+        "500":
+          description: ""
+      security:
+      - ApiKeyAuth: []
+      summary: GetAllGoods
+      tags:
+      - goods
+  /api/get-goods/{goods_id}:
+    get:
+      consumes:
+      - application/json
+      description: getting specific goods from user
+      operationId: get-goods
+      parameters:
+      - description: goods id
+        in: path
+        name: goods_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entity.Goods'
+        "400":
+          description: ""
+        "500":
+          description: ""
+      security:
+      - ApiKeyAuth: []
+      summary: GetGoods
+      tags:
+      - goods
+  /api/get-lists/:
+    get:
+      consumes:
+      - application/json
+      description: getting all lists by user
+      operationId: get-all-lists
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/dto.ListsResponse'
+            type: array
+        "400":
+          description: ""
+        "500":
+          description: ""
+      security:
+      - ApiKeyAuth: []
+      summary: GetAllLists
+      tags:
+      - lists
+  /api/get-lists/{lists_id}:
+    get:
+      consumes:
+      - application/json
+      description: getting specific lists from user
+      operationId: get-lists
+      parameters:
+      - description: lists id
+        in: path
+        name: lists_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.ListsResponse'
+        "400":
+          description: ""
+        "500":
+          description: ""
+      security:
+      - ApiKeyAuth: []
+      summary: GetLists
+      tags:
+      - lists
+  /api/get-shopping-list/{list_id}/:
+    post:
+      consumes:
+      - application/json
+      description: getting full list for shopping
+      operationId: get-shopping-list
+      parameters:
+      - description: list id
+        in: path
+        name: list_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: integer
+        "400":
+          description: ""
+        "500":
+          description: ""
+      security:
+      - ApiKeyAuth: []
+      summary: getShoppingList
+      tags:
+      - lists
+  /api/remove-goods-from-dish/:
+    post:
+      consumes:
+      - application/json
+      description: removing goods from existing dish
+      operationId: remove-goods-from-dish
+      parameters:
+      - description: goods that should be removed to dish
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/dto.RemoveFromDishRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ""
+        "400":
+          description: ""
+        "500":
+          description: ""
+      security:
+      - ApiKeyAuth: []
+      summary: RemoveGoodsFromDish
+      tags:
+      - dishes
+  /api/update-dish/{dish_id}:
+    post:
+      consumes:
+      - application/json
+      description: updating existing dish
+      operationId: update-dish
+      parameters:
+      - description: dish id
+        in: path
+        name: dish_id
+        required: true
+        type: integer
+      - description: updating data for dish
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/entity.Dish'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.DishesResponse'
+        "400":
+          description: ""
+        "500":
+          description: ""
+      security:
+      - ApiKeyAuth: []
+      summary: UpdateDish
+      tags:
+      - dishes
+  /api/update-goods/{goods_id}:
+    post:
+      consumes:
+      - application/json
+      description: updating existing goods
+      operationId: update-goods
+      parameters:
+      - description: goods id
+        in: path
+        name: goods_id
+        required: true
+        type: integer
+      - description: updating data for goods
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/entity.Goods'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entity.Goods'
+        "400":
+          description: ""
+        "500":
+          description: ""
+      security:
+      - ApiKeyAuth: []
+      summary: UpdateGoods
+      tags:
+      - goods
+  /api/update-lists/{lists_id}:
+    post:
+      consumes:
+      - application/json
+      description: updating existing lists
+      operationId: update-lists
+      parameters:
+      - description: lists id
+        in: path
+        name: lists_id
+        required: true
+        type: integer
+      - description: updating data for lists
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/entity.List'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.ListsResponse'
+        "400":
+          description: ""
+        "500":
+          description: ""
+      security:
+      - ApiKeyAuth: []
+      summary: UpdateLists
+      tags:
+      - lists
+  /refresh-token:
+    post:
+      consumes:
+      - application/json
+      description: get-new-access
+      operationId: get-new-access
+      parameters:
+      - description: refresh token
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/dto.RefreshRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.Access'
+        "400":
+          description: ""
+      summary: RefreshAccessToken
+      tags:
+      - auth
+  /sign-in:
+    post:
+      consumes:
+      - application/json
+      description: sign into account
+      operationId: sign in process
+      parameters:
+      - description: user name + password
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/dto.LoginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.Access'
+        "400":
+          description: ""
+        "500":
+          description: ""
+      summary: SignIn
+      tags:
+      - auth
+  /sign-up:
+    post:
+      consumes:
+      - application/json
+      description: create account
+      operationId: create-account
+      parameters:
+      - description: user name + password
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/dto.LoginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.Access'
+        "400":
+          description: ""
+        "500":
+          description: ""
+      summary: SignUp
+      tags:
+      - auth
+securityDefinitions:
+  ApiKeyAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

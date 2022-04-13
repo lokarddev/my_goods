@@ -1,4 +1,4 @@
-package users_http
+package auth
 
 import (
 	"github.com/gin-gonic/gin"
@@ -21,6 +21,18 @@ func (h *UsersHttpHandler) RegisterRoutes(root *gin.RouterGroup) {
 	root.POST("refresh-token/", h.RefreshAccessToken)
 }
 
+// SignIn godoc
+// @Summary      SignIn
+// @Tags         auth
+// @Description  sign into account
+// @ID           sign in process
+// @Accept       json
+// @Produce      json
+// @Param        input  body      dto.LoginRequest  true  "user name + password"
+// @Success      200    {object}  dto.Access
+// @Failure      400
+// @Failure      500
+// @Router       /sign-in [post]
 func (h *UsersHttpHandler) SignIn(c *gin.Context) {
 	input := dto.LoginRequest{}
 	err := c.BindJSON(&input)
@@ -36,6 +48,18 @@ func (h *UsersHttpHandler) SignIn(c *gin.Context) {
 	c.JSON(http.StatusOK, access)
 }
 
+// SignUp godoc
+// @Summary      SignUp
+// @Tags         auth
+// @Description  create account
+// @ID           create-account
+// @Accept       json
+// @Produce      json
+// @Param        input  body      dto.LoginRequest  true  "user name + password"
+// @Success      200    {object}  dto.Access
+// @Failure      400
+// @Failure      500
+// @Router       /sign-up [post]
 func (h *UsersHttpHandler) SignUp(c *gin.Context) {
 	input := dto.LoginRequest{}
 	err := c.BindJSON(&input)
@@ -52,15 +76,24 @@ func (h *UsersHttpHandler) SignUp(c *gin.Context) {
 }
 
 // RefreshAccessToken generate new token pair and new session for user
+// @Summary      RefreshAccessToken
+// @Tags         auth
+// @Description  get-new-access
+// @ID           get-new-access
+// @Accept       json
+// @Produce      json
+// @Param        input  body      dto.RefreshRequest  true  "refresh token"
+// @Success      200    {object}  dto.Access
+// @Failure      400
+// @Router       /refresh-token [post]
 func (h *UsersHttpHandler) RefreshAccessToken(c *gin.Context) {
-	input := map[string]string{}
+	input := dto.RefreshRequest{}
 	err := c.BindJSON(&input)
-	token, ok := input["refresh"]
-	if err != nil || !ok {
+	if err != nil {
 		c.AbortWithStatus(http.StatusBadRequest)
 		return
 	}
-	newAccess, err := h.service.RefreshAccess(token)
+	newAccess, err := h.service.RefreshAccess(input.Refresh)
 	if err != nil {
 		c.AbortWithStatus(http.StatusBadRequest)
 		return

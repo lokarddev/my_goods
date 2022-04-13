@@ -3,20 +3,23 @@ package app
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgx/v4/pgxpool"
+	swaggerFiles "github.com/swaggo/files"
+	"github.com/swaggo/gin-swagger"
 	"log"
+	_ "my_goods/docs"
 	"my_goods/internal/delivery/web"
+	"my_goods/internal/delivery/web/auth"
 	"my_goods/internal/delivery/web/dish_http"
 	"my_goods/internal/delivery/web/goods_http"
 	"my_goods/internal/delivery/web/lists_http"
-	"my_goods/internal/delivery/web/users_http"
+	"my_goods/internal/service/auth_service"
 	"my_goods/internal/service/dish_service"
 	"my_goods/internal/service/goods_service"
 	"my_goods/internal/service/lists_service"
-	"my_goods/internal/service/users_service"
+	"my_goods/internal/storage/postgres/auth_repository"
 	"my_goods/internal/storage/postgres/dish_repository"
 	"my_goods/internal/storage/postgres/goods_repository"
 	"my_goods/internal/storage/postgres/lists_repository"
-	"my_goods/internal/storage/postgres/users_repository"
 	"my_goods/pkg/database"
 	"my_goods/pkg/env"
 )
@@ -48,12 +51,18 @@ func (a *App) Run() {
 
 func (a *App) InitApp() {
 	root := a.server.Router.Group("/")
-	api := a.server.Router.Group("api/")
+	api := a.server.Router.Group("api/", auth.AuthenticationMiddleware)
 
+	a.initSwaggerDocs(root)
 	a.initUsers(a.dbPool, root)
+
 	a.initLists(a.dbPool, api)
 	a.initGoods(a.dbPool, api)
 	a.initDish(a.dbPool, api)
+}
+
+func (a *App) initSwaggerDocs(root *gin.RouterGroup) {
+	root.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 }
 
 func (a *App) initGoods(db *pgxpool.Pool, api *gin.RouterGroup) {
@@ -78,8 +87,8 @@ func (a *App) initLists(db *pgxpool.Pool, api *gin.RouterGroup) {
 }
 
 func (a *App) initUsers(db *pgxpool.Pool, api *gin.RouterGroup) {
-	repo := users_repository.NewUsersRepository(db)
-	service := users_service.NewUsersService(repo)
-	httpHandler := users_http.NewUsersHttpHandler(service)
+	repo := auth_repository.NewUsersRepository(db)
+	service := auth_service.NewUsersService(repo)
+	httpHandler := auth.NewUsersHttpHandler(service)
 	httpHandler.RegisterRoutes(api)
 }
