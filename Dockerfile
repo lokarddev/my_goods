@@ -1,18 +1,27 @@
-FROM golang
+FROM node:16-alpine AS static
+
 WORKDIR /app
 
 COPY go.mod ./
 COPY go.sum ./
-RUN go mod download
 COPY ./ ./
+WORKDIR /app/templates
+RUN export NODE_OPTIONS=--openssl-legacy-provider
+RUN npm install
+RUN npm run build --openssl-legacy-provider
+
+FROM golang:1.18
+WORKDIR /app
+COPY --from=static ./app ./
+RUN go mod download
+RUN CGO_ENABLED=0 go test ./... -v -cover
+
 WORKDIR /app/cmd
-RUN go build -o goods
-EXPOSE 8001
+RUN go build -o my_goods
 
 WORKDIR /app
 ENV WAIT_VERSION 2.7.2
 ADD https://github.com/ufoscout/docker-compose-wait/releases/download/$WAIT_VERSION/wait /wait
 RUN chmod +x /wait
 
-
-CMD ["/app/cmd/goods"]
+CMD ["/app/cmd/my_goods"]
