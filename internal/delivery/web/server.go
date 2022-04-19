@@ -22,7 +22,7 @@ func (s *Server) Run() {
 func NewServer() *Server {
 	router := gin.New()
 	router.Use(gin.Logger(), gin.Recovery(), cors.Default())
-	router.Use(static.Serve("/", static.LocalFile("../templates/dist", false)))
-	router.NoRoute(func(c *gin.Context) { c.File("../templates/dist/index.html") })
+	router.Use(static.Serve("/", static.LocalFile("./templates/dist", false)))
+	router.NoRoute(func(c *gin.Context) { c.File("./templates/dist/index.html") })
 	return &Server{Router: router}
 }

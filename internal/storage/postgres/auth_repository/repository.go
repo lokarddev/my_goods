@@ -46,7 +46,7 @@ func (r *UsersRepository) CreateUser(input dto.LoginRequest) (entity.User, error
 	user := entity.PgxUser{}
 	query := fmt.Sprintf("INSERT INTO %s (name, password) VALUES ($1, $2) RETURNING id, name, password", postgres.Users)
 	err := r.DB.BeginTxFunc(r.Ctx, pgx.TxOptions{}, func(tx pgx.Tx) error {
-		rows, err := r.DB.Query(r.Ctx, query, input.Name, input.Password)
+		rows, err := tx.Query(r.Ctx, query, input.Name, input.Password)
 		defer rows.Close()
 		for rows.Next() {
 			if err = rows.Scan(&user.Id, &user.Name, &user.Password); err != nil {
@@ -69,7 +69,7 @@ func (r *UsersRepository) CreateSession(userId int32, refresh string) (entity.Se
 	query := fmt.Sprintf("INSERT INTO %s (user_id, refresh_token, expires_in) VALUES ($1, $2, $3) "+
 		"RETURNING id, user_id, refresh_token, expires_in", postgres.Session)
 	err := r.DB.BeginTxFunc(r.Ctx, pgx.TxOptions{}, func(tx pgx.Tx) error {
-		rows, err := r.DB.Query(r.Ctx, query, userId, refresh, expiresIn)
+		rows, err := tx.Query(r.Ctx, query, userId, refresh, expiresIn)
 		defer rows.Close()
 		for rows.Next() {
 			if err = rows.Scan(&session.Id, &session.UserId, &session.RefreshToken, &session.ExpiresIn); err != nil {
@@ -84,7 +84,7 @@ func (r *UsersRepository) CreateSession(userId int32, refresh string) (entity.Se
 func (r *UsersRepository) deleteSession(userId int32) error {
 	query := fmt.Sprintf("DELETE FROM %s WHERE user_id=$1", postgres.Session)
 	err := r.DB.BeginTxFunc(r.Ctx, pgx.TxOptions{}, func(tx pgx.Tx) error {
-		_, err := r.DB.Exec(r.Ctx, query, userId)
+		_, err := tx.Exec(r.Ctx, query, userId)
 		if err != nil {
 			log.Println(err)
 		}

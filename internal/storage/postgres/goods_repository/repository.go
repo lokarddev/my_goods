@@ -58,7 +58,7 @@ func (r *GoodsRepository) CreateGoods(good *entity.Goods) (*entity.Goods, error)
 	var pgxGoods entity.PgxGoods
 	query := fmt.Sprintf("INSERT INTO %s (created_at, updated_at, title, description) VALUES (now(), now(), $1, $2) RETURNING id, title, description", postgres.GoodsTable)
 	err := r.DB.BeginTxFunc(r.Ctx, pgx.TxOptions{}, func(tx pgx.Tx) error {
-		rows, err := r.DB.Query(r.Ctx, query, good.Title, good.Description)
+		rows, err := tx.Query(r.Ctx, query, good.Title, good.Description)
 		defer rows.Close()
 		for rows.Next() {
 			if err = rows.Scan(&pgxGoods.Id, &pgxGoods.Title, &pgxGoods.Description); err != nil {
@@ -78,7 +78,7 @@ func (r *GoodsRepository) UpdateGoods(good *entity.Goods, goodsId, userId int32)
 	query := fmt.Sprintf("UPDATE %s SET updated_at=now(), title=$1, description=$2 "+
 		"WHERE id=$3 AND user_id=$4 RETURNING id, title, description", postgres.GoodsTable)
 	err := r.DB.BeginTxFunc(r.Ctx, pgx.TxOptions{}, func(tx pgx.Tx) error {
-		rows, err := r.DB.Query(r.Ctx, query, good.Title, good.Description, goodsId, userId)
+		rows, err := tx.Query(r.Ctx, query, good.Title, good.Description, goodsId, userId)
 		defer rows.Close()
 		for rows.Next() {
 			if err = rows.Scan(&pgxGoods.Id, &pgxGoods.Title, &pgxGoods.Description); err != nil {
@@ -96,7 +96,7 @@ func (r *GoodsRepository) UpdateGoods(good *entity.Goods, goodsId, userId int32)
 func (r *GoodsRepository) DeleteGoods(goodsId, userId int32) error {
 	query := fmt.Sprintf("DELETE FROM %s WHERE id=$1 and user_id=$2", postgres.GoodsTable)
 	err := r.DB.BeginTxFunc(r.Ctx, pgx.TxOptions{}, func(tx pgx.Tx) error {
-		_, err := r.DB.Exec(r.Ctx, query, goodsId, userId)
+		_, err := tx.Exec(r.Ctx, query, goodsId, userId)
 		return err
 	})
 	if err != nil {

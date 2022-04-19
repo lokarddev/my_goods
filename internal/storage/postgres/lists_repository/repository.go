@@ -193,7 +193,7 @@ func (r *ListRepository) UpdateList(list *entity.List, listId, userId int32) (*d
 func (r *ListRepository) DeleteList(listId, userId int32) error {
 	query := fmt.Sprintf("DELETE FROM %s WHERE id=$1 AND user_id=$2", postgres.ListsTable)
 	err := r.DB.BeginTxFunc(r.Ctx, pgx.TxOptions{}, func(tx pgx.Tx) error {
-		_, err := r.DB.Exec(r.Ctx, query, listId, userId)
+		_, err := tx.Exec(r.Ctx, query, listId, userId)
 		return err
 	})
 	if err != nil {

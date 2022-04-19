@@ -50,18 +50,18 @@ func (a *App) Run() {
 }
 
 func (a *App) InitApp() {
-	root := a.server.Router.Group("/")
 	api := a.server.Router.Group("api/", auth.AuthenticationMiddleware)
+	authentication := a.server.Router.Group("auth/")
 
-	a.initSwaggerDocs(root)
-	a.initUsers(a.dbPool, root)
+	a.initSwaggerDocs(a.server.Router)
+	a.initUsers(a.dbPool, authentication)
 
 	a.initLists(a.dbPool, api)
 	a.initGoods(a.dbPool, api)
 	a.initDish(a.dbPool, api)
 }
 
-func (a *App) initSwaggerDocs(root *gin.RouterGroup) {
+func (a *App) initSwaggerDocs(root *gin.Engine) {
 	root.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 }
 

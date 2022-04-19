@@ -76,7 +76,7 @@ func (r *DishRepository) CreateDish(dish *entity.Dish) (*entity.Dish, error) {
 	var pgxDish entity.PgxDish
 	query := fmt.Sprintf("INSERT INTO %s (created_at, updated_at, title, description) VALUES (now(), now(), $1, $2) RETURNING id, title, description", postgres.DishTable)
 	err := r.DB.BeginTxFunc(r.Ctx, pgx.TxOptions{}, func(tx pgx.Tx) error {
-		rows, err := r.DB.Query(r.Ctx, query, dish.Title, dish.Description)
+		rows, err := tx.Query(r.Ctx, query, dish.Title, dish.Description)
 		defer rows.Close()
 		for rows.Next() {
 			if err = rows.Scan(&pgxDish.Id, &pgxDish.Title, &pgxDish.Description); err != nil {
@@ -95,7 +95,7 @@ func (r *DishRepository) UpdateDish(dish *entity.Dish, dishId, userId int32) (*d
 	var pgxDish entity.PgxDish
 	query := fmt.Sprintf("UPDATE %s SET updated_at=now(), title=$1, description=$2 WHERE id=$3 AND user_id=$4 RETURNING id, title, description", postgres.DishTable)
 	err := r.DB.BeginTxFunc(r.Ctx, pgx.TxOptions{}, func(tx pgx.Tx) error {
-		rows, err := r.DB.Query(r.Ctx, query, dish.Title, dish.Description, dishId, userId)
+		rows, err := tx.Query(r.Ctx, query, dish.Title, dish.Description, dishId, userId)
 		defer rows.Close()
 		for rows.Next() {
 			if err = rows.Scan(&pgxDish.Id, &pgxDish.Title, &pgxDish.Description); err != nil {
@@ -117,7 +117,7 @@ func (r *DishRepository) UpdateDish(dish *entity.Dish, dishId, userId int32) (*d
 func (r *DishRepository) DeleteDish(dishId, userId int32) error {
 	query := fmt.Sprintf("DELETE FROM %s WHERE id=$1 AND user_id=$2", postgres.DishTable)
 	err := r.DB.BeginTxFunc(r.Ctx, pgx.TxOptions{}, func(tx pgx.Tx) error {
-		_, err := r.DB.Exec(r.Ctx, query, dishId, userId)
+		_, err := tx.Exec(r.Ctx, query, dishId, userId)
 		return err
 	})
 	if err != nil {
